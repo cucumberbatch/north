@@ -24,7 +24,9 @@
   - [x] An asset manager with convenient API
     - [x] Textures
     - [x] Shaders
-    - [ ] Models
+    - [x] Models
+      - Wavefront OBJ geometry and UV loading is implemented (`ObjMeshAssetLoader`). OBJ/MTL material import is not implemented yet; assign a `Texture` through a `Material` after loading the mesh.
+      - `Mesh` now uses 32-bit indices and exposes cached local bounds for collider setup.
 - [ ] XML scene file loader
   - [x] XML format of scene
     - A sample scene exists at `assets/scenes/test_scene.xml`, but no loader consumes it yet.
@@ -44,6 +46,7 @@
 - [x] Physics improvements
   - [x] Chop world scene into squares/partitions and store them in tree (QuadTree/Octree)
     - `Octree`, `SceneSpatialIndex`, and `Aabb` are implemented.
+  - [x] Derive a `MeshCollider`'s local AABB from the entity's `MeshRenderer` mesh when no custom bounds are supplied.
 - [ ] Events and event listeners using an Origin<T> objects
 - [ ] Customizable pipeline builder
   - The pipeline is still assembled directly; the API is not builder-based yet.

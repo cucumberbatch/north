@@ -1,7 +1,6 @@
 package org.north.core.scene;
 
 import org.north.core.physics.spatial.Aabb;
-import org.north.core.physics.spatial.AxisAlignedBoundingBox;
 import org.north.core.physics.spatial.Octree;
 import org.north.core.scene.component.MeshCollider;
 
@@ -104,7 +103,7 @@ public class SceneSpatialIndex {
      * Returns colliders whose bounds intersect the query box. The result is a broad-phase
      * candidate set; callers still have to perform an exact test for their query shape.
      */
-    public Iterable<MeshCollider> query(AxisAlignedBoundingBox queryBox) {
+    public Iterable<MeshCollider> query(Aabb queryBox) {
         if (octree == null || queryBox == null) {
             return Collections.emptyList();
         }

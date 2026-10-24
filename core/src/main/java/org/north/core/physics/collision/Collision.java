@@ -1,10 +1,10 @@
 package org.north.core.physics.collision;
 
-import org.north.core.physics.spatial.AxisAlignedBoundingBox;
+import org.north.core.physics.spatial.Aabb;
 
 public class Collision {
-    private AxisAlignedBoundingBox a;
-    private AxisAlignedBoundingBox b;
+    private Aabb a;
+    private Aabb b;
     private CollisionPair pair;
     private CollisionState state;
     private boolean isModified;
@@ -16,8 +16,8 @@ public class Collision {
      * @param b second colliding object
      * @param pair object that holds info about collision
      */
-    public Collision(AxisAlignedBoundingBox a,
-                     AxisAlignedBoundingBox b,
+    public Collision(Aabb a,
+                     Aabb b,
                      CollisionPair pair) {
         this(CollisionState.ENTERED, a, b, pair);
     }
@@ -31,8 +31,8 @@ public class Collision {
      * @param pair object that holds info about collision
      */
     public Collision(CollisionState state,
-                     AxisAlignedBoundingBox a,
-                     AxisAlignedBoundingBox b,
+                     Aabb a,
+                     Aabb b,
                      CollisionPair pair) {
         this.state = state;
         this.a = a;
@@ -40,11 +40,11 @@ public class Collision {
         this.pair = pair;
     }
 
-    public AxisAlignedBoundingBox getA() {
+    public Aabb getA() {
         return a;
     }
 
-    public AxisAlignedBoundingBox getB() {
+    public Aabb getB() {
         return b;
     }
 
@@ -56,11 +56,11 @@ public class Collision {
         return isModified;
     }
 
-    public void setA(AxisAlignedBoundingBox a) {
+    public void setA(Aabb a) {
         this.a = a;
     }
 
-    public void setB(AxisAlignedBoundingBox b) {
+    public void setB(Aabb b) {
         this.b = b;
     }
 
@@ -90,7 +90,7 @@ public class Collision {
     }
 
     public void swapAB() {
-        AxisAlignedBoundingBox temp = b;
+        Aabb temp = b;
         b = a;
         a = temp;
     }

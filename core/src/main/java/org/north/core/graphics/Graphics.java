@@ -12,7 +12,6 @@ import org.lwjgl.opengl.GL32;
 import org.north.core.exception.ShaderUniformNotFoundException;
 import org.north.core.utils.BufferUtils;
 
-import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
@@ -181,16 +180,26 @@ public class Graphics {
         return new BufferHandle(vbo);
     }
 
-    public BufferHandle createElementBuffer(byte[] indices) {
+    public BufferHandle createElementBuffer(int[] indices) {
         int ibo = GL20.glGenBuffers();
         GL20.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, ibo);
 
-        ByteBuffer buffer = BufferUtils.createByteBuffer(indices.length);
-        buffer.put(indices).flip();
-
+        IntBuffer buffer = BufferUtils.createIntBuffer(indices);
         GL20.glBufferData(GL20.GL_ELEMENT_ARRAY_BUFFER, buffer, GL20.GL_STATIC_DRAW);
         // The element buffer stays bound to the currently bound vertex array.
         return new BufferHandle(ibo);
+    }
+
+    /**
+     * @deprecated use {@link #createElementBuffer(int[])}. Byte indices cap meshes at 256 vertices.
+     */
+    @Deprecated
+    public BufferHandle createElementBuffer(byte[] indices) {
+        int[] converted = new int[indices.length];
+        for (int i = 0; i < indices.length; i++) {
+            converted[i] = indices[i] & 0xFF;
+        }
+        return createElementBuffer(converted);
     }
 
     public void deleteVertexArray(VertexArrayHandle vao) {
@@ -204,7 +213,7 @@ public class Graphics {
     public void drawIndexed(VertexArrayHandle vao, int indexCount) {
         GL30.glBindVertexArray(vao.id());
         GL11.glEnable(GL32.GL_DEPTH_CLAMP);
-        GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, GL11.GL_UNSIGNED_BYTE, 0);
+        GL11.glDrawElements(GL11.GL_TRIANGLES, indexCount, GL11.GL_UNSIGNED_INT, 0);
         GL30.glBindVertexArray(0);
     }
 

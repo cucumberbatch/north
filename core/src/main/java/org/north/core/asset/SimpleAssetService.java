@@ -1,9 +1,11 @@
 package org.north.core.asset;
 
 import org.north.core.asset.loader.AssetLoader;
+import org.north.core.asset.loader.ObjMeshAssetLoader;
 import org.north.core.asset.loader.ShaderAssetLoader;
 import org.north.core.asset.loader.TextureAssetLoader;
 import org.north.core.graphics.Graphics;
+import org.north.core.graphics.Mesh;
 import org.north.core.graphics.Texture;
 import org.north.core.graphics.shader.Shader;
 import org.north.core.io.LocalResourceLoader;
@@ -19,6 +21,7 @@ public class SimpleAssetService implements AssetService {
         ResourceLoader resourceLoader = new LocalResourceLoader();
         loaderRegistry.put(Texture.class, new TextureAssetLoader(resourceLoader, graphics));
         loaderRegistry.put(Shader.class, new ShaderAssetLoader(resourceLoader, graphics));
+        loaderRegistry.put(Mesh.class, new ObjMeshAssetLoader(resourceLoader, graphics));
     }
 
     @Override

@@ -6,11 +6,13 @@ import org.joml.Vector4f;
 import org.lwjgl.opengl.GL30;
 import org.north.core.asset.AssetService;
 import org.north.core.graphics.Material;
+import org.north.core.graphics.Mesh;
 import org.north.core.graphics.PredefinedMeshes;
 import org.north.core.graphics.Texture;
 import org.north.core.graphics.shader.Shader;
 import org.north.core.physics.shape.Rectangle;
 import org.north.core.scene.component.*;
+import org.north.core.scene.component.MeshCollider.Space;
 import org.north.core.scene.component.management.ComponentManager;
 
 import java.util.List;
@@ -34,8 +36,8 @@ public class DefaultSceneComposer implements SceneComposer {
         // Create the camera and world objects first so their update systems run before the cursor
         // picking system. The cursor itself is created last and is still rendered on top because
         // its renderer uses the screen-space render layer.
-        //testManyTransparentCubesGrid(scene, cm);
-        initCursorDemoOverlay(scene, cm);
+        testManyTransparentCubesGrid(scene, cm);
+        //initCursorDemoOverlay(scene, cm);
     }
 
     private void initCursorDemoOverlay(EntityManager scene, ComponentManager cm) {
@@ -171,6 +173,22 @@ public class DefaultSceneComposer implements SceneComposer {
                 }
             }
         }
+        
+        Entity theThing = scene.create("theThing");
+        Mesh mesh = assetService.get(Mesh.class, "assets/meshes/the-thing.obj");
+        // Texture texture = assetService.get(Texture.class, "assets/models/character.png");
+        Shader thingShader = assetService.get(Shader.class, "assets/shaders/texture_shader");
+
+        Transform thingTransform = cm.add(theThing, Transform.class);
+        thingTransform.moveTo(-1, -1, -1);
+
+        MeshRenderer renderer = cm.add(theThing, MeshRenderer.class);
+        renderer.mesh = mesh;
+        renderer.material = new Material(thingShader)
+                // .setTexture("u_texture", texture)
+                .setVector("u_color", new Vector4f(1f, 1f, 1f, 1f));
+
+        cm.add(theThing, MeshCollider.class).space = Space.WORLD;
 
         Entity cursorEntity = scene.create("visual_cursor");
         Transform cursorTransform = cm.add(cursorEntity, Transform.class);

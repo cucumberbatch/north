@@ -3,8 +3,10 @@ package org.north.core.system;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.north.core.graphics.Mesh;
 import org.north.core.scene.SceneSpatialIndex;
 import org.north.core.scene.component.MeshCollider;
+import org.north.core.scene.component.MeshRenderer;
 import org.north.core.scene.component.Transform;
 import org.north.core.architecture.ApplicationContext;
 import org.north.core.architecture.ComponentHandler;
@@ -43,9 +45,6 @@ public class MeshColliderSystem extends AbstractSystem<MeshCollider>
         if (transform == null) return;
 
         if (meshCollider.space == MeshCollider.Space.WORLD) {
-            if (meshCollider.localBounds == null || meshCollider.localBounds.isEmpty()) {
-                meshCollider.localBounds = new Aabb().set(UNIT_BOUNDS);
-            }
             updateWorldBounds(meshCollider, transform);
             return;
         }
@@ -82,7 +81,18 @@ public class MeshColliderSystem extends AbstractSystem<MeshCollider>
 
     private void updateWorldBounds(MeshCollider meshCollider, Transform transform) {
         Aabb localBounds = meshCollider.localBounds;
-        if (localBounds == null || localBounds.isEmpty()) return;
+        if (localBounds == null || localBounds.isEmpty()) {
+            localBounds = resolveLocalBounds(meshCollider);
+            if (localBounds != null) {
+                meshCollider.localBounds = localBounds;
+            }
+        }
+
+        // Keep an empty localBounds when there is no mesh yet, so adding a MeshRenderer later can
+        // still replace the fallback bounds on the next update.
+        if (localBounds == null || localBounds.isEmpty()) {
+            localBounds = UNIT_BOUNDS;
+        }
 
         transform.getGlobalModelMatrix(modelMatrix);
 
@@ -107,6 +117,18 @@ public class MeshColliderSystem extends AbstractSystem<MeshCollider>
             meshCollider.bounds.setMinMax(min, max);
             spatialIndex.invalidate();
         }
+    }
+
+    private Aabb resolveLocalBounds(MeshCollider meshCollider) {
+        MeshRenderer meshRenderer = cm.get(meshCollider.getEntity(), MeshRenderer.class);
+        if (meshRenderer != null && meshRenderer.mesh != null) {
+            Mesh mesh = meshRenderer.mesh;
+            Aabb meshBounds = mesh.getBounds();
+            if (!meshBounds.isEmpty()) {
+                return new Aabb().set(meshBounds);
+            }
+        }
+        return null;
     }
 
 }

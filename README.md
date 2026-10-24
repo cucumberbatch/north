@@ -1,6 +1,33 @@
 # A primitive work in progress Java ECS game engine on OpenGL
 Primitive java game engine with using LWJGL (Light Weight Java Graphic Library) on ECS (Entity-Component-System) pattern.
 
+## Meshes and textures
+
+Wavefront OBJ files are loaded through the asset service. The OBJ loader supports triangles,
+polygons, negative indices, and vertex UV coordinates:
+
+```java
+Mesh mesh = assetService.get(Mesh.class, "assets/models/character.obj");
+Texture texture = assetService.get(Texture.class, "assets/models/character.png");
+Shader shader = assetService.get(Shader.class, "assets/shaders/texture_shader");
+
+MeshRenderer renderer = componentManager.add(entity, MeshRenderer.class);
+renderer.mesh = mesh;
+renderer.material = new Material(shader)
+        .setTexture("u_texture", texture)
+        .setVector("u_color", new Vector4f(1f, 1f, 1f, 1f));
+```
+
+For a world-space collider, add a `MeshCollider` and leave `localBounds` empty. The collider system
+derives the local AABB from the renderer mesh and transforms it into world space. Set
+`localBounds` explicitly (or call `refreshLocalBounds()` after changing the mesh) when the collider
+needs different bounds.
+
+```java
+MeshCollider collider = componentManager.add(entity, MeshCollider.class);
+collider.space = MeshCollider.Space.WORLD;
+```
+
 ## Remote gamepad
 
 The engine starts a small web server which serves a touch friendly gamepad. Open the printed URL

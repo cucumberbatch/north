@@ -7,22 +7,16 @@ import java.util.*;
 /**
  * A simple OctreeNode data structure implementation
  */
-public class Octree<E extends AxisAlignedBoundingBox> {
-    private static class Node<E extends AxisAlignedBoundingBox> implements AxisAlignedBoundingBox {
-        private final float     xMin, xMax, yMin, yMax, zMin, zMax;
+public class Octree<E extends Aabb> {
+    private static class Node<E extends Aabb> extends Aabb {
         private final Node<E>   parent;
         private final List<E>   elements;
         private Node<E>[]       children;
 
         Node(Node<E> parent, float xMin, float xMax, float yMin, float yMax, float zMin, float zMax) {
+            super(xMin, xMax, yMin, yMax, zMin, zMax);
             this.parent = parent;
             this.elements = new ArrayList<>();
-            this.xMin = xMin;
-            this.xMax = xMax;
-            this.yMin = yMin;
-            this.yMax = yMax;
-            this.zMin = zMin;
-            this.zMax = zMax;
         }
 
         boolean isRoot() {
@@ -32,13 +26,6 @@ public class Octree<E extends AxisAlignedBoundingBox> {
         boolean isLeaf() {
             return this.children == null;
         }
-
-        @Override public float xMin() { return xMin; }
-        @Override public float xMax() { return xMax; }
-        @Override public float yMin() { return yMin; }
-        @Override public float yMax() { return yMax; }
-        @Override public float zMin() { return zMin; }
-        @Override public float zMax() { return zMax; }
     }
 
 
@@ -100,12 +87,12 @@ public class Octree<E extends AxisAlignedBoundingBox> {
     }
 
     private void subdivide(Node<E> node) {
-        float xMin = node.xMin;
-        float yMin = node.yMin;
-        float zMin = node.zMin;
-        float xMax = node.xMax;
-        float yMax = node.yMax;
-        float zMax = node.zMax;
+        float xMin = node.xMin();
+        float yMin = node.yMin();
+        float zMin = node.zMin();
+        float xMax = node.xMax();
+        float yMax = node.yMax();
+        float zMax = node.zMax();
         float xMid = (xMax + xMin) * 0.5f;
         float yMid = (yMax + yMin) * 0.5f;
         float zMid = (zMax + zMin) * 0.5f;
@@ -208,7 +195,7 @@ public class Octree<E extends AxisAlignedBoundingBox> {
      * @param queryBox bounding box that represents a query for selecting elements
      * @return an iterable data structure of objects of type {@code E}
      */
-    public Iterable<E> query(AxisAlignedBoundingBox queryBox) {
+    public Iterable<E> query(Aabb queryBox) {
         if (!queryBox.isIntersects(root))
             return Collections.emptyList();
 
@@ -219,12 +206,12 @@ public class Octree<E extends AxisAlignedBoundingBox> {
      * Iterator implementation for lazy traversal of octree nodes
      */
     private class OctreeLazyIterator implements Iterator<E> {
-        private final AxisAlignedBoundingBox queryBox;
+        private final Aabb queryBox;
         private final Deque<Node<E>> nodeStack;
         private final Set<E> returnedElements;
         private E nextElement;
 
-        private OctreeLazyIterator(AxisAlignedBoundingBox queryBox) {
+        private OctreeLazyIterator(Aabb queryBox) {
             this.queryBox = queryBox;
             this.nodeStack = new ArrayDeque<>();
             this.returnedElements = new HashSet<>();

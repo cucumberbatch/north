@@ -19,15 +19,26 @@ public class MeshCollider extends AbstractComponent {
     public Rectangle body = new Rectangle(new Vector2f().zero(), new Vector2f().zero());
 
     /**
-     * Bounds of the collider in local mesh space. The default matches the engine's unit-sized
-     * predefined meshes (a cube or quad from -0.5 to +0.5).
+     * Bounds of the collider in local mesh space.
+     *
+     * <p>An empty box means "derive from the entity's {@link MeshRenderer} mesh". If the entity
+     * has no mesh, the collider falls back to a unit cube. Set this explicitly to override the
+     * mesh bounds.</p>
      */
-    public Aabb localBounds = new Aabb(-0.5f, 0.5f, -0.5f, 0.5f, -0.5f, 0.5f);
+    public Aabb localBounds = new Aabb();
 
     /** World-space bounds. Updated by {@code MeshColliderSystem}. */
     public final Aabb bounds = new Aabb();
 
     /** World colliders with this flag disabled are skipped by scene picking. */
     public boolean selectable = true;
+
+    /**
+     * Clears custom bounds so the next collider update derives them from the current
+     * {@link MeshRenderer} mesh again.
+     */
+    public void refreshLocalBounds() {
+        localBounds = new Aabb();
+    }
 
 }

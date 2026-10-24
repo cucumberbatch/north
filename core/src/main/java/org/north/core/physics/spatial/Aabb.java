@@ -5,7 +5,7 @@ import org.joml.Vector3f;
 /**
  * A mutable, axis-aligned bounding box in world space.
  */
-public class Aabb implements AxisAlignedBoundingBox {
+public class Aabb {
 
     private final Vector3f min = new Vector3f();
     private final Vector3f max = new Vector3f();
@@ -160,32 +160,38 @@ public class Aabb implements AxisAlignedBoundingBox {
         return tMin;
     }
 
-    @Override
+    public boolean isIntersects(Aabb other) {
+        return this.xMin() <= other.xMax() && this.xMax() >= other.xMin()
+                && this.yMin() <= other.yMax() && this.yMax() >= other.yMin()
+                && this.zMin() <= other.zMax() && this.zMax() >= other.zMin();
+    }
+
+    public boolean isInside(Aabb other) {
+        return this.xMin() >= other.xMin() && this.xMax() <= other.xMax()
+                && this.yMin() >= other.yMin() && this.yMax() <= other.yMax()
+                && this.zMin() >= other.zMin() && this.zMax() <= other.zMax();
+    }
+
     public float xMin() {
         return min.x;
     }
 
-    @Override
     public float xMax() {
         return max.x;
     }
 
-    @Override
     public float yMin() {
         return min.y;
     }
 
-    @Override
     public float yMax() {
         return max.y;
     }
 
-    @Override
     public float zMin() {
         return min.z;
     }
 
-    @Override
     public float zMax() {
         return max.z;
     }

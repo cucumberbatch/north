@@ -9,7 +9,7 @@ import org.north.core.exception.ShaderUniformNotFoundException;
 import org.north.core.graphics.Graphics;
 import org.north.core.graphics.Window;
 import org.north.core.system.SystemManager;
-import org.north.core.physics.spatial.AxisAlignedBoundingBox;
+import org.north.core.physics.spatial.Aabb;
 import org.north.core.physics.collision.Collision;
 import org.north.core.physics.collision.CollisionState;
 import org.north.core.scene.DefaultSceneComposer;
@@ -346,7 +346,7 @@ public class Pipeline implements Runnable {
 
     }
 
-    private boolean isSameCollisionAsInPreviousFrame(Collision previousFrameCollision, AxisAlignedBoundingBox A, AxisAlignedBoundingBox B) {
+    private boolean isSameCollisionAsInPreviousFrame(Collision previousFrameCollision, Aabb A, Aabb B) {
         return (previousFrameCollision.getA() == A && previousFrameCollision.getB() == B) ||
                (previousFrameCollision.getA() == B && previousFrameCollision.getB() == A);
     }
@@ -420,9 +420,11 @@ public class Pipeline implements Runnable {
                 Component component = iterator.next();
                 for (Collision collision : systemManager.collisions) {
                     // Logger.trace(String.format("Visiting enter collision [%s] for component [%s]", collision, component));
-                    if (collision.getA() != component.getEntity() && collision.getB() != component.getEntity()) continue;
+                    // Collision currently stores bounds. The entity comparison is kept as an
+                    // identity check for the legacy collision-handler path.
+                    if ((Object) collision.getA() != component.getEntity() && (Object) collision.getB() != component.getEntity()) continue;
                     if (collision.inState(CollisionState.ENTERED)) {
-                        if (component.getEntity() == collision.getA()) collision.swapAB();
+                        if ((Object) component.getEntity() == collision.getA()) collision.swapAB();
                         process.onCollisionStarted(component, collision);
                     }
                 }
@@ -444,9 +446,9 @@ public class Pipeline implements Runnable {
                 Component component = iterator.next();
                 for (Collision collision : systemManager.collisions) {
                     // Logger.trace(String.format("Visiting hold collision [%s] for component [%s]", collision, component));
-                    if (collision.getA() != component.getEntity() && collision.getB() != component.getEntity()) continue;
+                    if ((Object) collision.getA() != component.getEntity() && (Object) collision.getB() != component.getEntity()) continue;
                     if (collision.inState(CollisionState.CONTINUED)) {
-                        if (component.getEntity() == collision.getA()) collision.swapAB();
+                        if ((Object) component.getEntity() == collision.getA()) collision.swapAB();
                         process.onCollisionContinued(component, collision);
                     }
                 }
@@ -468,9 +470,9 @@ public class Pipeline implements Runnable {
                 Component component = iterator.next();
                 for (Collision collision : systemManager.collisions) {
                     // Logger.trace(String.format("Visiting exit collision [%s] for component [%s]", collision, component));
-                    if (collision.getA() != component.getEntity() && collision.getB() != component.getEntity()) continue;
+                    if ((Object) collision.getA() != component.getEntity() && (Object) collision.getB() != component.getEntity()) continue;
                     if (collision.inState(CollisionState.EXITED)) {
-                        if (component.getEntity() == collision.getA()) collision.swapAB();
+                        if ((Object) component.getEntity() == collision.getA()) collision.swapAB();
                         process.onCollisionEnded(component, collision);
                     }
                 }

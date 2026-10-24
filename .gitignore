@@ -36,6 +36,8 @@ dependency-reduced-pom.xml
 
 # Package files
 *.jar
+# Gradle wrapper jar is part of the build
+!gradle/wrapper/gradle-wrapper.jar
 *.war
 *.nar
 *.ear

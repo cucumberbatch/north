@@ -1,7 +1,6 @@
 package org.north.core.scene.component.management;
 
 import org.north.core.scene.component.Component;
-import org.north.core.scene.component.Transform;
 import org.north.core.architecture.ApplicationContext;
 import org.north.core.scene.Entity;
 import org.north.core.scene.command.CommandApplier;
@@ -67,10 +66,6 @@ public class ComponentManager {
     }
 
     public final <C extends Component> C remove(Entity entity, Class<C> type) {
-        if (type.isAssignableFrom(Transform.class)) {
-            throw new IllegalArgumentException("Transform component cannot be removed!");
-        }
-
         C component = container.get(entity, type);
 
         commandApplier.addDeferredCommand(new RemoveComponentDeferredCommand(entity, component));
@@ -90,6 +85,10 @@ public class ComponentManager {
 
     public final <C extends Component> Collection<C> getAllByType(Class<C> type) {
         return container.getComponentsByType(type);
+    }
+
+    public final Set<Class<? extends Component>> getComponentTypes(Entity entity) {
+        return container.getComponentTypesByEntity(entity);
     }
 
     private <C extends Component> C instantiateAndRegisterComponent(Entity entity, Class<C> componentType) {

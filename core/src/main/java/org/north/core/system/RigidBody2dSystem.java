@@ -19,7 +19,7 @@ public class RigidBody2dSystem extends AbstractSystem<RigidBody2d>
 
     @Override
     public void update(RigidBody2d rigidBody, float deltaTime) {
-        Transform transform = rigidBody.getTransform();
+        Transform transform = cm.get(rigidBody.getEntity(), Transform.class);
 
         rigidBody.velocity.add(rigidBody.acceleration.x * deltaTime, rigidBody.acceleration.y * deltaTime);
         rigidBody.angularVelocity.add(rigidBody.angularAcceleration.x * deltaTime, rigidBody.angularAcceleration.y * deltaTime);

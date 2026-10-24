@@ -2,7 +2,6 @@ package org.north.core.scene.component;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.north.core.scene.Entity;
 
 /**
  * The main component of each game object that tells about its position, rotation and scale
@@ -29,12 +28,6 @@ public class Transform extends AbstractComponent {
     public Transform(Transform parentTransform) {
         this.parentTransform = parentTransform;
         super.setState(ComponentState.READY_TO_OPERATE_STATE);
-    }
-
-    @Override
-    public void setEntity(Entity entity) {
-        super.setEntity(entity);
-//        entity.setTransform(this);
     }
 
     public void setParent(Transform parentTransform) {

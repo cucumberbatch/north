@@ -47,7 +47,7 @@ public class GasCloudSystem extends AbstractSystem<GasCloud> implements InitProc
                 cm.remove(entity, GasCloud.class);
 
                 // wierd operation, but anyway...
-                entity.remove(entity);
+                entityManager.remove(entity);
                 return;
             }
 

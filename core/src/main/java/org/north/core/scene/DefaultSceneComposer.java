@@ -12,7 +12,6 @@ import org.north.core.graphics.shader.Shader;
 import org.north.core.physics.shape.Rectangle;
 import org.north.core.scene.component.*;
 import org.north.core.scene.component.management.ComponentManager;
-import org.north.core.scene.tree.TreeNode;
 
 import java.util.List;
 
@@ -26,33 +25,35 @@ public class DefaultSceneComposer implements SceneComposer {
     }
 
     @Override
-    public void compose(final TreeNode<Entity> sceneRoot, final ComponentManager cm) {
-        // initCubeAndCamera(sceneRoot, cm);
-        // initReferenceScene(sceneRoot, cm);
-        // testScene(sceneRoot, cm);
-        initSpaceshipOnScreen(sceneRoot, cm);
+    public void compose(final EntityManager scene, final ComponentManager cm) {
+        // initCubeAndCamera(scene, cm);
+        // initReferenceScene(scene, cm);
+        // testScene(scene, cm);
+        //initSpaceshipOnScreen(scene, cm);
 
         // Create the camera and world objects first so their update systems run before the cursor
         // picking system. The cursor itself is created last and is still rendered on top because
         // its renderer uses the screen-space render layer.
-//        testManyTransparentCubesGrid(sceneRoot, cm);
-//        initCursorDemoOverlay(sceneRoot, cm);
+        //testManyTransparentCubesGrid(scene, cm);
+        initCursorDemoOverlay(scene, cm);
     }
 
-    private void initCursorDemoOverlay(TreeNode<Entity> root, ComponentManager cm) {
-        createUiButton(root, cm, "ui_button_1", 256f, 112f, 180f, 46f,
+    private void initCursorDemoOverlay(EntityManager scene, ComponentManager cm) {
+        createCamera(scene, cm, false);
+        
+        createUiButton(scene, cm, "ui_button_1", 256f, 112f, 180f, 46f,
                 new Vector4f(0.22f, 0.32f, 0.44f, 0.94f),
                 new Vector4f(0.32f, 0.72f, 1.00f, 1.00f));
 
-        createUiButton(root, cm, "ui_button_2", 256f, 180f, 180f, 46f,
+        createUiButton(scene, cm, "ui_button_2", 256f, 180f, 180f, 46f,
                 new Vector4f(0.34f, 0.26f, 0.20f, 0.94f),
                 new Vector4f(1.00f, 0.66f, 0.30f, 1.00f));
 
-        createUiButton(root, cm, "ui_button_3", 256f, 248f, 180f, 46f,
+        createUiButton(scene, cm, "ui_button_3", 256f, 248f, 180f, 46f,
                 new Vector4f(0.24f, 0.34f, 0.26f, 0.94f),
                 new Vector4f(0.42f, 0.92f, 0.52f, 1.00f));
 
-        Entity cursorEntity = new Entity("visual_cursor", cm);
+        Entity cursorEntity = scene.create("visual_cursor");
         Transform cursorTransform = cm.add(cursorEntity, Transform.class);
         cursorTransform.moveTo(256f, 320f, 0f);
 
@@ -68,15 +69,14 @@ public class DefaultSceneComposer implements SceneComposer {
         cursorRenderer.material = simpleColorMaterial(visualCursor.color);
 
         cm.add(cursorEntity, visualCursor);
-        root.add(cursorEntity);
 
-        createCursorLabel(root, cm, cursorEntity);
+        createCursorLabel(scene, cm, cursorEntity);
     }
 
-    private void createCursorLabel(TreeNode<Entity> root, ComponentManager cm, Entity cursorEntity) {
+    private void createCursorLabel(EntityManager scene, ComponentManager cm, Entity cursorEntity) {
         // A screen-space label that displays the name of the entity under the cursor. It is added
         // after the cursor so its update system runs after cursor picking has selected a target.
-        Entity labelEntity = new Entity("visual_cursor_label", cm);
+        Entity labelEntity = scene.create("visual_cursor_label");
         cm.add(labelEntity, Transform.class);
 
         MeshRenderer labelRenderer = cm.add(labelEntity, MeshRenderer.class);
@@ -87,10 +87,9 @@ public class DefaultSceneComposer implements SceneComposer {
         VisualCursorLabel label = cm.add(labelEntity, VisualCursorLabel.class);
         label.cursorEntity = cursorEntity;
 
-        root.add(labelEntity);
     }
 
-    private void createUiButton(TreeNode<Entity> root,
+    private void createUiButton(EntityManager scene,
                                 ComponentManager cm,
                                 String name,
                                 float x,
@@ -99,7 +98,7 @@ public class DefaultSceneComposer implements SceneComposer {
                                 float height,
                                 Vector4f idleColor,
                                 Vector4f hoverColor) {
-        Entity entity = new Entity(name, cm);
+        Entity entity = scene.create(name);
 
         Transform transform = cm.add(entity, Transform.class);
         transform.moveTo(x, y, 0f);
@@ -123,31 +122,32 @@ public class DefaultSceneComposer implements SceneComposer {
         );
 
         cm.add(entity, button);
-        root.add(entity);
     }
 
-    private void testManyTransparentCubesGrid(TreeNode<Entity> root, ComponentManager cm) {
+    private void testManyTransparentCubesGrid(EntityManager scene, ComponentManager cm) {
         GL30.glClearColor(.1f, .1f, .1f, 1f);
 
-        Entity camera = new Entity("camera", cm);
-        Transform rootTransform = cm.get((Entity) root, Transform.class);
+        createCamera(scene, cm, true);
+        
+        Transform sceneTransform = cm.get(scene.getRoot(), Transform.class);
 
-        cm.add(camera, new Transform(rootTransform));
-        cm.add(camera, Camera.class, CameraControls.class);
+        // Entity camera = scene.create("camera");
 
-        root.add(camera);
+        // cm.add(camera, new Transform(sceneTransform));
+        // cm.add(camera, Camera.class, CameraControls.class);
+
 
         Shader shader = shader("simple_color_shader");
         int N = 8;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 for (int k = 0; k < N; k++) {
-                    Entity cube = new Entity("cube_" + i + "_" + j + "_" + k, cm);
+                    Entity cube = scene.create("cube_" + i + "_" + j + "_" + k);
                     final float x = i;
                     final float z = j;
                     final float y = k;
 
-                    Transform transform = new Transform(rootTransform);
+                    Transform transform = new Transform(sceneTransform);
 //                    Transform transform = new Transform();
                     transform.moveTo(0.5f * x, 0.5f * y, 0.5f * z);
                     transform.rescaleTo(0.4999f, 0.4999f, 0.4999f);
@@ -166,14 +166,13 @@ public class DefaultSceneComposer implements SceneComposer {
 
                     cm.add(cube, CubeColorSwitcher.class).acc = (x / N) * (y / N) * (z / N);
 
-                    root.add(cube);
 
-//                    root = cube;
+//                    scene = cube;
                 }
             }
         }
 
-        Entity cursorEntity = new Entity("visual_cursor", cm);
+        Entity cursorEntity = scene.create("visual_cursor");
         Transform cursorTransform = cm.add(cursorEntity, Transform.class);
         cursorTransform.moveTo(256f, 320f, 0f);
 
@@ -189,13 +188,12 @@ public class DefaultSceneComposer implements SceneComposer {
         cursorRenderer.material = simpleColorMaterial(visualCursor.color);
 
         cm.add(cursorEntity, visualCursor);
-        root.add(cursorEntity);
 
-        createCursorLabel(root, cm, cursorEntity);
+        createCursorLabel(scene, cm, cursorEntity);
     }
 
-    private void testScene(TreeNode<Entity> root, ComponentManager cm) {
-        Entity testCube = new Entity("test_cube", cm);
+    private void testScene(EntityManager scene, ComponentManager cm) {
+        Entity testCube = scene.create("test_cube");
 
         Transform transform = new Transform();
         transform.moveTo(0.5f, 0.5f, 0.5f);
@@ -208,7 +206,7 @@ public class DefaultSceneComposer implements SceneComposer {
         cm.add(testCube, transform);
         cm.add(testCube, meshRenderer);
 
-        Entity camera = new Entity("camera", cm);
+        Entity camera = scene.create("camera");
 
         cm.add(camera, Transform.class, Camera.class, CameraControls.class);
 
@@ -216,21 +214,15 @@ public class DefaultSceneComposer implements SceneComposer {
 //        transform.getPosition().set(0.5f, 0.5f, 0.5f);
 //        transform.scale.set(0.8f, 0.8f, 0.8f);
 
-        root.add(testCube);
-        root.add(camera);
 
     }
 
-    private void initCubeAndCamera(TreeNode<Entity> root, ComponentManager cm) {
-        Entity camera = new Entity("camera", cm);
-        Entity center = new Entity("center", cm);
-        Entity left   = new Entity("left", cm);
-        Entity right  = new Entity("right", cm);
+    private void initCubeAndCamera(EntityManager scene, ComponentManager cm) {
+        Entity camera = scene.create("camera");
+        Entity center = scene.create("center");
+        Entity left   = scene.create("left");
+        Entity right  = scene.create("right");
 
-        root.add(camera);
-        root.add(center);
-        root.add(left);
-        root.add(right);
 
         List<? extends Component> components;
         Transform    transform;
@@ -276,8 +268,8 @@ public class DefaultSceneComposer implements SceneComposer {
 
     }
 
-    private void initReferenceScene(TreeNode<Entity> root, ComponentManager cm) {
-        Entity referenceBox = new Entity("referenceBox", cm);
+    private void initReferenceScene(EntityManager scene, ComponentManager cm) {
+        Entity referenceBox = scene.create("referenceBox");
 
         List<? extends Component> componentList =
                 cm.add(referenceBox, Transform.class, MeshRenderer.class, RigidBody.class);
@@ -286,23 +278,15 @@ public class DefaultSceneComposer implements SceneComposer {
         renderer.material = simpleColorMaterial(new Vector4f(0.25f, 0.5f, 0.8f, 1f));
         renderer.mesh     = PredefinedMeshes.QUAD;
 
-        root.add(referenceBox);
-
-        if (root.findFirst(entity -> cm.has(entity, Camera.class)) == null) {
-            Entity camera = new Entity("camera", cm);
-
-            cm.add(camera, Transform.class, Camera.class, CameraControls.class, PlayerControls.class);
-
-            referenceBox.add(camera);
-        }
+        createCamera(scene, cm, true);
     }
 
-    private void initSpaceshipOnScreen(TreeNode<Entity> root, ComponentManager cm) {
+    private void initSpaceshipOnScreen(EntityManager scene, ComponentManager cm) {
         Transform    transform;
         MeshRenderer renderer;
 
         // TV Screen object
-        Entity tvScreen = new Entity("tvScreen", cm);
+        Entity tvScreen = scene.create("tvScreen");
         transform = cm.add(tvScreen, Transform.class);
         transform.rescaleTo(new Vector3f(2, 2, 2));
 
@@ -310,7 +294,7 @@ public class DefaultSceneComposer implements SceneComposer {
         renderer.material = textureMaterial("assets/textures/screen-frame-1024.png");
 
         // Player spaceship in the middle of the screen
-        Entity player = new Entity("player", cm);
+        Entity player = scene.create("player");
         transform = cm.add(player, Transform.class);
         transform.moveTo(new Vector3f(0f, 0f, 1f));
         transform.rescaleTo(0.2f, 0.2f, 0.2f);
@@ -321,7 +305,7 @@ public class DefaultSceneComposer implements SceneComposer {
         cm.add(player, CloudEmitter.class);
 
 
-        Entity gasCloudSpawner = new Entity("gasCloudSpawner", cm);
+        Entity gasCloudSpawner = scene.create("gasCloudSpawner");
         transform = cm.add(gasCloudSpawner, Transform.class);
         transform.moveTo( new Vector3f(0f, -0.225f, 0.5f));
 
@@ -346,7 +330,7 @@ public class DefaultSceneComposer implements SceneComposer {
          */
 
         // Background texture behind tv screen, player and other gameplay objects
-        Entity background = new Entity("background", cm);
+        Entity background = scene.create("background");
         transform = cm.add(background, Transform.class);
         transform.moveTo(new Vector3f(0f, 0f, 2f));
         transform.rescaleTo(new Vector3f(2, 2, 2));
@@ -355,27 +339,35 @@ public class DefaultSceneComposer implements SceneComposer {
         renderer.material = textureMaterial("assets/textures/screen-background-1024.png");
 
         // Camera
-        Entity camera = new Entity("camera", cm);
-        transform = cm.add(camera, Transform.class);
-        transform.moveTo( new Vector3f(0f, 0f, 0f));
+        createCamera(scene, cm, false);
+        // Entity camera = scene.create("camera");
+        // transform = cm.add(camera, Transform.class);
+        // transform.moveTo( new Vector3f(0f, 0f, 0f));
 
-        cm.add(camera, Camera.class);
+        // cm.add(camera, Camera.class);
+        
 
         // World that moves when player is "moving"
-        Entity movableWorld = new Entity("movableWorld", cm);
+        Entity movableWorld = scene.create("movableWorld");
         cm.add(movableWorld, RigidBody.class);
         transform = cm.add(movableWorld, Transform.class);
         //        transform.scale = new Vector3f(5, 5, 5);
 
-        root.add(camera);
-        root.add(movableWorld);
 
-        camera.add(tvScreen);
 
-        tvScreen.add(background);
-        tvScreen.add(player);
 
-        player.add(gasCloudSpawner);
+    }
+
+    private Entity createCamera(EntityManager scene, ComponentManager cm, boolean enableControls) {
+        Entity camera = scene.findFirst(entity -> cm.has(entity, Camera.class));
+        if (camera == null) {
+            camera = scene.create("camera");
+            cm.add(camera, Transform.class, Camera.class);
+            if (enableControls) {
+                cm.add(camera, CameraControls.class, PlayerControls.class);
+            }
+        }
+        return camera;
     }
 
     private Shader shader(String name) {

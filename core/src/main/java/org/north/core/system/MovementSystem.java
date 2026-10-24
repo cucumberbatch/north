@@ -4,6 +4,7 @@ import org.north.core.architecture.ApplicationContext;
 import org.north.core.architecture.ComponentHandler;
 import org.north.core.architecture.Inject;
 import org.north.core.scene.component.MovementComponent;
+import org.north.core.scene.component.Transform;
 import org.north.core.system.process.InitProcess;
 import org.north.core.system.process.UpdateProcess;
 
@@ -17,19 +18,20 @@ public class MovementSystem extends AbstractSystem<MovementComponent> implements
 
     @Override
     public void init(MovementComponent movementComponent) {
-        movementComponent.initialZ = movementComponent.getTransform().getPosition().z;
+        movementComponent.initialZ = cm.get(movementComponent.getEntity(), Transform.class).getPosition().z;
     }
 
     @Override
     public void update(MovementComponent movementComponent, float dt) {
+        Transform transform = cm.get(movementComponent.getEntity(), Transform.class);
         float acc = movementComponent.acc;
         float range = movementComponent.range;
         float initialZ = movementComponent.initialZ;
 
 
-        movementComponent.getTransform().moveTo(
-                movementComponent.getTransform().getPosition().x,
-                movementComponent.getTransform().getPosition().y,
+        transform.moveTo(
+                transform.getPosition().x,
+                transform.getPosition().y,
                 initialZ + (float) Math.sin(acc) * range
         );
 

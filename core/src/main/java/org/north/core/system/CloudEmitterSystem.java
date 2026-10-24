@@ -53,8 +53,8 @@ public class CloudEmitterSystem extends AbstractSystem<CloudEmitter>
     @Override
     public void init(CloudEmitter cloudEmitter) {
         Entity emitterEntity = cloudEmitter.getEntity();
-        Entity spawnerEntity = sceneRoot.getByName("gasCloudSpawner");
-        movableWorld         = sceneRoot.getByName("movableWorld");
+        Entity spawnerEntity = entityManager.find("gasCloudSpawner");
+        movableWorld         = entityManager.find("movableWorld");
         
         spaceshipTransform    = cm.get(emitterEntity, Transform.class);
         spawnerTransform      = cm.get(spawnerEntity, Transform.class);
@@ -106,8 +106,7 @@ public class CloudEmitterSystem extends AbstractSystem<CloudEmitter>
     }
 
     private void emitCloud(float angleInRadians) {
-        Entity gasCloudEntity = new Entity("gas_cloud_" + gasCloudEntityNumber++, cm);
-        movableWorld.add(gasCloudEntity);
+        Entity gasCloudEntity = entityManager.create("gas_cloud_" + gasCloudEntityNumber++);
 
         Vector3f shipPosition = spaceshipTransform.getGlobalPosition(new Vector3f());
         Vector3f spawnerPosition = spawnerTransform.getGlobalPosition(new Vector3f());

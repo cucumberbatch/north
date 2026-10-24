@@ -36,6 +36,7 @@ public class DependencyRegisterer {
                 Constructor<?>[] declaredConstructors = aClass.getDeclaredConstructors();
                 for (Constructor<?> constructor: declaredConstructors) {
                     if (constructor.getParameterCount() == 0) {
+                        constructor.setAccessible(true);
                         initializedObjects[i] = constructor.newInstance();
                         objects.put(aClass, initializedObjects[i]);
                         dependencyUpdated = true;
@@ -77,6 +78,7 @@ public class DependencyRegisterer {
 
         for (Constructor<T> constructor: declaredConstructors) {
             if (constructor.getParameterCount() == 0) {
+                constructor.setAccessible(true);
                 noArgsConstructor = constructor;
                 continue;
             }

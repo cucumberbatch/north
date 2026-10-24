@@ -26,7 +26,7 @@ public class PlayerControlsSystem extends AbstractSystem<PlayerControls>
 
     @Override
     public void init(PlayerControls playerControls) {
-        rigidBody = cm.get(sceneRoot.getByName("referenceBox"), RigidBody.class);
+        rigidBody = cm.get(entityManager.find("referenceBox"), RigidBody.class);
     }
 
     @Override

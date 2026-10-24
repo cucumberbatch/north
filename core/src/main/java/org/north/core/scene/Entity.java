@@ -1,67 +1,68 @@
 package org.north.core.scene;
 
+import org.north.core.scene.component.Component;
 import org.north.core.scene.component.management.ComponentManager;
-import org.north.core.scene.tree.LinkedTreeNode;
-import org.north.core.scene.component.Transform;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Collection;
+import java.util.Objects;
 
 /**
- * Entity is an object that contains a collection of components
- * that describes its nature
+ * Entity is a flat object that contains a collection of components
+ * that describes its nature.
+ *
+ * <p>Entities are created and tracked by {@link EntityManager}. Entity hierarchy is not
+ * part of this class; use components for parent/child relationships.</p>
  *
  * @author cucumberbatch
  */
-// TODO: get rid of TreeNode things, an Entity must be plain object without any unnecessary hierarchy. A hierarchy can be achieved by usage of specific components in future
-public class Entity
-        extends LinkedTreeNode<Entity> {
+public class Entity {
 
-    // TODO: move idSequence to the EntityManager or something and add a specific constructor with id
-    private static final AtomicInteger idSequence = new AtomicInteger(1);
-
+    private final int id;
+    private final String name;
     private final ComponentManager componentManager;
 
-    public int id;
+    Entity(int id, String name, ComponentManager componentManager) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("Entity id must be positive");
+        }
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Entity name must be present as a non blank string");
+        }
+        this.id = id;
+        this.name = Objects.requireNonNull(name, "name");
+        this.componentManager = Objects.requireNonNull(componentManager, "componentManager");
+    }
 
-    // TODO: move entity name into separate component, make names of limited length, i.e.: FixedString8, FixedString16, and so on. Also, make FixedString classes implement CharSequence to better Java ecosystem integration
-    public String name;
-
-    public Entity(String name, ComponentManager componentManager) {
-        if (name == null || name.isBlank())
-            throw new IllegalArgumentException("Entity name must be present as a non blank string in a constructor argument");
-
-        if (componentManager == null)
-            throw new NullPointerException("A provided component manager must not be null");
-
-        this.id   = idSequence.getAndIncrement();
-        this.name = name;
-        this.componentManager = componentManager;
+    public int getId() {
+        return id;
     }
 
     public String getName() {
         return name;
     }
 
-    public Entity getByName(String name) {
-        return super.findFirst(node -> node.getName().equals(name));
+    public <C extends Component> C getComponent(Class<C> type) {
+        return componentManager.get(this, type);
     }
 
-    public Transform getTransform() {
-        return componentManager.get(this, Transform.class);
+    public <C extends Component> boolean hasComponent(Class<C> type) {
+        return componentManager.has(this, type);
     }
 
-    public void setTransform(Transform transform) {
-        throw new UnsupportedOperationException("Currently it's not supported to modify transform of entity using this method");
+    public <C extends Component> C addComponent(Class<C> type) {
+        return componentManager.add(this, type);
     }
 
-    @Override
-    public boolean add(Entity entity) {
-        return super.add(entity);
+    public <C extends Component> C addComponent(C component) {
+        return componentManager.add(this, component);
     }
 
-    @Override
-    public boolean remove(Entity entity) {
-        return super.remove(entity);
+    public <C extends Component> C removeComponent(Class<C> type) {
+        return componentManager.remove(this, type);
+    }
+
+    public Collection<Class<? extends Component>> getComponentTypes() {
+        return componentManager.getComponentTypes(this);
     }
 
     @Override
@@ -79,6 +80,6 @@ public class Entity
 
     @Override
     public String toString() {
-        return "Entity{id=" + id + "}";
+        return "Entity{id=" + id + ", name='" + name + "'}";
     }
 }

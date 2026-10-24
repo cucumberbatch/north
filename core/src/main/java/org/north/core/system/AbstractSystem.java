@@ -7,6 +7,7 @@ import org.north.core.exception.ComponentAlreadyExistsException;
 import org.north.core.utils.Pool;
 import org.north.core.utils.Vector3fPool;
 import org.north.core.scene.Entity;
+import org.north.core.scene.EntityManager;
 import org.north.core.scene.component.Component;
 import org.north.core.scene.component.management.ComponentContainer;
 import org.north.core.scene.component.management.ComponentManager;
@@ -25,6 +26,7 @@ public abstract class AbstractSystem<C extends Component> implements System<C> {
     
     protected final ComponentManager cm;
     protected final AssetService     assetService;
+    protected final EntityManager    entityManager;
     protected final Entity           sceneRoot;
 
 
@@ -33,7 +35,8 @@ public abstract class AbstractSystem<C extends Component> implements System<C> {
         this.container     = context.getDependency(ComponentContainer.class);
         this.cm            = context.getDependency(ComponentManager.class);
         this.assetService  = context.getDependency(AssetService.class);
-        this.sceneRoot     = context.getDependency(Entity.class);
+        this.entityManager = context.getDependency(EntityManager.class);
+        this.sceneRoot     = entityManager.getRoot();
         this.vector3fPool  = context.getDependency(Vector3fPool.class);
     }
 

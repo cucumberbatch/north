@@ -14,6 +14,7 @@ import org.north.core.physics.collision.Collision;
 import org.north.core.physics.collision.CollisionState;
 import org.north.core.scene.DefaultSceneComposer;
 import org.north.core.scene.Entity;
+import org.north.core.scene.EntityManager;
 import org.north.core.scene.SceneComposer;
 import org.north.core.scene.command.CommandApplier;
 import org.north.core.scene.component.Component;
@@ -21,7 +22,6 @@ import org.north.core.scene.component.ComponentState;
 import org.north.core.scene.component.Transform;
 import org.north.core.scene.component.management.ComponentContainer;
 import org.north.core.scene.component.management.ComponentManager;
-import org.north.core.scene.tree.TreeNode;
 import org.north.core.system.CameraAwareService;
 import org.north.core.system.CameraControlsSystem;
 import org.north.core.system.Input;
@@ -50,7 +50,8 @@ public class Pipeline implements Runnable {
     private final FrameTiming timingContext;
     private final Input input;
 
-    private final TreeNode<Entity> rootNode;
+    private final EntityManager entityManager;
+    private final Entity rootEntity;
 
     private final boolean editorEnabled;
     private final boolean smoothStopAndStartUpdateProcess;
@@ -88,8 +89,9 @@ public class Pipeline implements Runnable {
             this.assetService = context.addDependency(AssetService.class, new SimpleAssetService(graphics));
             this.componentContainer = context.getDependency(ComponentContainer.class);
             cameraAwareService = context.getDependency(CameraAwareService.class);
-            this.rootNode =
-                    context.addDependency(Entity.class, new Entity("root", componentManager));
+            this.entityManager = context.addDependency(
+                    EntityManager.class, new EntityManager(componentManager));
+            this.rootEntity = entityManager.getRoot();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
@@ -152,9 +154,9 @@ public class Pipeline implements Runnable {
     }
 
     private void composeScene(SceneComposer composer) {
-        componentManager.add((Entity) rootNode, Transform.class);
+        componentManager.add(rootEntity, Transform.class);
         applyDeferredCommands();
-        composer.compose(rootNode, componentManager);
+        composer.compose(entityManager, componentManager);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

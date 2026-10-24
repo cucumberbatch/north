@@ -52,7 +52,7 @@ public abstract class AbstractComponent implements Component {
     @Override
     public String toString() {
         return "AbstractComponent{" +
-                "entityId=" + (entity == null ? null : entity.id) +
+                "entityId=" + (entity == null ? null : entity.getId()) +
                 ", isActive=" + isActive +
                 ", state=" + state +
                 '}';

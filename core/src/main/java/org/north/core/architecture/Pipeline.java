@@ -221,7 +221,7 @@ public class Pipeline implements Runnable {
             } else {
                 updateFlowState = RUN_TO_STOP;
             }
-            input.heldKeys.set(GLFW.GLFW_KEY_P, false);
+            input.clearKeyHold(GLFW.GLFW_KEY_P);
         }
     }
 

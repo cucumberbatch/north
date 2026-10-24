@@ -12,10 +12,10 @@ public interface Component {
     void setEntity(Entity entity);
 
     boolean isActive();
-    void setActivity(boolean activity);
+    void setActive(boolean active);
 
     default void switchActivity() {
-        setActivity(!isActive());
+        setActive(!isActive());
     }
 
     ComponentState getState();

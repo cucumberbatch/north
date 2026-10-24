@@ -33,8 +33,8 @@ public abstract class AbstractComponent implements Component {
     }
 
     @Override
-    public void setActivity(boolean activity) {
-        this.isActive = activity;
+    public void setActive(boolean active) {
+        this.isActive = active;
     }
 
     @Override
@@ -52,9 +52,9 @@ public abstract class AbstractComponent implements Component {
     @Override
     public String toString() {
         return "AbstractComponent{" +
-                "entityId=" + entity.id +
+                "entityId=" + (entity == null ? null : entity.id) +
                 ", isActive=" + isActive +
-                ", state=" + state.name() +
+                ", state=" + state +
                 '}';
     }
 

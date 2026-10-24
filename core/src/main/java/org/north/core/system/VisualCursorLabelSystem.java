@@ -78,7 +78,7 @@ public class VisualCursorLabelSystem extends AbstractSystem<VisualCursorLabel>
         renderer.material.setTexture("u_texture", label.texture);
 
         // The label is invisible until the cursor hovers an entity.
-        renderer.setActivity(false);
+        renderer.setActive(false);
     }
 
     @Override
@@ -92,13 +92,13 @@ public class VisualCursorLabelSystem extends AbstractSystem<VisualCursorLabel>
 
         Entity hovered = cursor != null ? cursor.hoveredEntity : null;
         if (cursor == null || !cursor.visible || hovered == null) {
-            renderer.setActivity(false);
+            renderer.setActive(false);
             return;
         }
 
         String text = hovered.getName();
         if (text == null || text.isEmpty()) {
-            renderer.setActivity(false);
+            renderer.setActive(false);
             return;
         }
 
@@ -106,7 +106,7 @@ public class VisualCursorLabelSystem extends AbstractSystem<VisualCursorLabel>
             replaceTexture(label, renderer, text);
         }
 
-        renderer.setActivity(true);
+        renderer.setActive(true);
         positionLabel(label, cursor);
     }
 

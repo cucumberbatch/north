@@ -106,6 +106,18 @@
             </resource>
         </resources>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <nonFilteredFileExtensions>
+                        <nonFilteredFileExtension>wav</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>ogg</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>mp3</nonFilteredFileExtension>
+                    </nonFilteredFileExtensions>
+                </configuration>
+            </plugin>
+
             <!-- Плагин для создания JAR с Class-Path в манифесте -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

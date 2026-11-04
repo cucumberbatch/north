@@ -28,6 +28,29 @@ MeshCollider collider = componentManager.add(entity, MeshCollider.class);
 collider.space = MeshCollider.Space.WORLD;
 ```
 
+## Audio
+
+WAV clips are loaded through the asset service and uploaded to OpenAL. If no audio device can be
+opened, the audio backend disables itself and the rest of the engine keeps running.
+
+```java
+AudioClip clip = assetService.get(AudioClip.class, "assets/audio/footstep.wav");
+AudioSource source = audio.createSource();
+source.setClip(clip);
+source.setGain(0.8f);
+source.setPosition(new Vector3f(0f, 0f, 0f));
+source.play();
+// ...
+source.close();
+```
+
+The `Audio` instance is registered in the application context and is closed by the engine after
+assets are unloaded.
+
+The built-in `application.scene=footsteps` scene is a third-person test scene. Walk with
+W/A/S/D or the arrow keys; the player emits one-shot footsteps from the loaded WAV while moving.
+Use another value for `application.scene` (or remove the property) to use the original cubes scene.
+
 ## Remote gamepad
 
 The engine starts a small web server which serves a touch friendly gamepad. Open the printed URL

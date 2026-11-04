@@ -38,37 +38,6 @@ public class PredefinedMeshes {
             }
     );
 
-    public static final Mesh CUBE_OLD = new Mesh(
-            new float[]{
-                    -0.5f,  0.5f,  0.5f,
-                    -0.5f, -0.5f,  0.5f,
-                     0.5f, -0.5f,  0.5f,
-                     0.5f,  0.5f,  0.5f,
-                    -0.5f,  0.5f, -0.5f,
-                     0.5f,  0.5f, -0.5f,
-                    -0.5f, -0.5f, -0.5f,
-                     0.5f, -0.5f, -0.5f,
-            },
-            new byte[]{
-                    0, 1, 3, 3, 1, 2,
-                    4, 0, 3, 5, 4, 3,
-                    3, 2, 7, 5, 3, 7,
-                    6, 1, 0, 6, 0, 4,
-                    2, 1, 6, 2, 6, 7,
-                    7, 6, 4, 7, 4, 5,
-            },
-            new float[]{
-                    0.5f, 0.0f, 0.0f,
-                    0.0f, 0.5f, 0.0f,
-                    0.0f, 0.0f, 0.5f,
-                    0.0f, 0.5f, 0.5f,
-                    0.5f, 0.0f, 0.0f,
-                    0.0f, 0.5f, 0.0f,
-                    0.0f, 0.0f, 0.5f,
-                    0.0f, 0.5f, 0.5f,
-            }
-    );
-
     public static final Mesh QUAD = new Mesh(
             new float[]{
                     -0.5f,  0.5f, 0.0f,

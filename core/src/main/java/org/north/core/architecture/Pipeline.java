@@ -3,6 +3,7 @@ package org.north.core.architecture;
 import org.lwjgl.glfw.GLFW;
 import org.north.core.asset.AssetService;
 import org.north.core.asset.SimpleAssetService;
+import org.north.core.audio.Audio;
 import org.north.core.config.ApplicationProperties;
 import org.north.core.exception.ComponentNotFoundException;
 import org.north.core.exception.ShaderUniformNotFoundException;
@@ -86,7 +87,10 @@ public class Pipeline implements Runnable {
 
         try {
 //            context.addDependency(ComponentContainer.class, componentContainer);
-            this.assetService = context.addDependency(AssetService.class, new SimpleAssetService(graphics));
+            this.assetService = context.addDependency(
+                    AssetService.class,
+                    new SimpleAssetService(graphics, context.getDependency(Audio.class))
+            );
             this.componentContainer = context.getDependency(ComponentContainer.class);
             cameraAwareService = context.getDependency(CameraAwareService.class);
             this.entityManager = context.addDependency(
@@ -151,6 +155,14 @@ public class Pipeline implements Runnable {
 
     public void stop() {
         stopped = true;
+    }
+
+    public void close() {
+        try {
+            assetService.close();
+        } catch (Exception e) {
+            log.error("Failed to close assets", e);
+        }
     }
 
     private void composeScene(SceneComposer composer) {

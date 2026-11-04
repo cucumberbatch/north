@@ -1,9 +1,12 @@
 package org.north.core.asset;
 
 import org.north.core.asset.loader.AssetLoader;
+import org.north.core.asset.loader.AudioAssetLoader;
 import org.north.core.asset.loader.ObjMeshAssetLoader;
 import org.north.core.asset.loader.ShaderAssetLoader;
 import org.north.core.asset.loader.TextureAssetLoader;
+import org.north.core.audio.Audio;
+import org.north.core.audio.AudioClip;
 import org.north.core.graphics.Graphics;
 import org.north.core.graphics.Mesh;
 import org.north.core.graphics.Texture;
@@ -17,11 +20,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SimpleAssetService implements AssetService {
     private final Map<Class<?>, AssetLoader<?>> loaderRegistry = new ConcurrentHashMap<>();
 
-    public SimpleAssetService(Graphics graphics) {
+    public SimpleAssetService(Graphics graphics, Audio audio) {
         ResourceLoader resourceLoader = new LocalResourceLoader();
         loaderRegistry.put(Texture.class, new TextureAssetLoader(resourceLoader, graphics));
         loaderRegistry.put(Shader.class, new ShaderAssetLoader(resourceLoader, graphics));
         loaderRegistry.put(Mesh.class, new ObjMeshAssetLoader(resourceLoader, graphics));
+        loaderRegistry.put(AudioClip.class, new AudioAssetLoader(resourceLoader, audio));
     }
 
     @Override

@@ -5,6 +5,8 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL30;
 import org.north.core.asset.AssetService;
+import org.north.core.audio.AudioClip;
+import org.north.core.config.ApplicationProperties;
 import org.north.core.graphics.Material;
 import org.north.core.graphics.Mesh;
 import org.north.core.graphics.PredefinedMeshes;
@@ -15,29 +17,97 @@ import org.north.core.scene.component.*;
 import org.north.core.scene.component.MeshCollider.Space;
 import org.north.core.scene.component.management.ComponentManager;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 public class DefaultSceneComposer implements SceneComposer {
     private static final String SHADERS_PATH = "assets/shaders/";
 
     private final AssetService assetService;
+    private final Map<String, BiConsumer<EntityManager, ComponentManager>> scenes;
 
     public DefaultSceneComposer(AssetService assetService) {
         this.assetService = assetService;
+        this.scenes = new HashMap<>();
+        initScenesMappings();
+    }
+
+    private void initScenesMappings() {
+        this.scenes.put("footsteps",       this::footstepTestScene);
+        this.scenes.put("cube-and-camera", this::initCubeAndCamera);
+        this.scenes.put("cursor-demo",     this::initCursorDemoOverlay);
+        this.scenes.put("spaceship",       this::initSpaceshipOnScreen);
+        this.scenes.put("cube-grid",       this::testManyTransparentCubesGrid);
     }
 
     @Override
     public void compose(final EntityManager scene, final ComponentManager cm) {
-        // initCubeAndCamera(scene, cm);
-        // initReferenceScene(scene, cm);
-        // testScene(scene, cm);
-        //initSpaceshipOnScreen(scene, cm);
+        String configuredScene = ApplicationProperties.getProperty("application.scene");
+        scenes.getOrDefault(configuredScene, (entityManager, componentManager) -> {
+            throw new IllegalArgumentException(String.format(
+                "Unknown or incorrect scene name '%s'. Available scenes are: %s",
+                configuredScene,
+                scenes.keySet()
+                    .stream()
+                    .collect(Collectors.joining(",\n\t", "[\n\t", "\n]"))
+            ));
+        }).accept(scene, cm);
+    }
 
-        // Create the camera and world objects first so their update systems run before the cursor
-        // picking system. The cursor itself is created last and is still rendered on top because
-        // its renderer uses the screen-space render layer.
-        testManyTransparentCubesGrid(scene, cm);
-        //initCursorDemoOverlay(scene, cm);
+    private void footstepTestScene(EntityManager scene, ComponentManager cm) {
+        GL30.glClearColor(0.06f, 0.07f, 0.09f, 1f);
+
+        Entity camera = createCamera(scene, cm, false);
+
+        Entity floor = scene.create("footstep_floor");
+        Transform floorTransform = cm.add(floor, Transform.class);
+        floorTransform.moveTo(0f, -0.1f, 0f);
+        floorTransform.rescaleTo(24f, 0.2f, 24f);
+
+        MeshRenderer floorRenderer = cm.add(floor, MeshRenderer.class);
+        floorRenderer.mesh = PredefinedMeshes.CUBE;
+        floorRenderer.material = simpleColorMaterial(new Vector4f(0.20f, 0.24f, 0.28f, 1f));
+
+        MeshCollider floorCollider = cm.add(floor, MeshCollider.class);
+        floorCollider.space = Space.WORLD;
+
+        for (int x = -1; x <= 1; x += 2) {
+            for (int z = -1; z <= 1; z += 2) {
+                Entity marker = scene.create("footstep_marker_" + x + "_" + z);
+                Transform markerTransform = cm.add(marker, Transform.class);
+                markerTransform.moveTo(x * 3.5f, 0.75f, z * 3.5f);
+                markerTransform.rescaleTo(0.6f, 1.5f, 0.6f);
+
+                MeshRenderer markerRenderer = cm.add(marker, MeshRenderer.class);
+                markerRenderer.mesh = PredefinedMeshes.CUBE;
+                markerRenderer.material = simpleColorMaterial(new Vector4f(0.30f, 0.48f, 0.62f, 1f));
+            }
+        }
+
+        Entity player = scene.create("footstep_player");
+        Transform playerTransform = cm.add(player, Transform.class);
+        playerTransform.moveTo(0f, 0.6f, 0f);
+        playerTransform.rescaleTo(0.8f, 1.2f, 0.8f);
+
+        MeshRenderer playerRenderer = cm.add(player, MeshRenderer.class);
+        playerRenderer.mesh = PredefinedMeshes.CUBE;
+        playerRenderer.material = simpleColorMaterial(new Vector4f(0.92f, 0.58f, 0.22f, 1f));
+
+        MeshCollider playerCollider = cm.add(player, MeshCollider.class);
+        playerCollider.space = Space.WORLD;
+
+        FootstepPlayer footstepPlayer = cm.add(player, FootstepPlayer.class);
+        footstepPlayer.cameraEntity = camera;
+        footstepPlayer.footstepClips = new AudioClip[]{
+            assetService.get(AudioClip.class, "assets/audio/footstep.sound_1.wav"),
+            assetService.get(AudioClip.class, "assets/audio/footstep.sound_2.wav"),
+            assetService.get(AudioClip.class, "assets/audio/footstep.sound_3.wav"),
+            assetService.get(AudioClip.class, "assets/audio/footstep.sound_4.wav"),
+        };
+        // footstepPlayer.footstepClip = assetService.get(AudioClip.class, "assets/audio/footstep.wav");
     }
 
     private void initCursorDemoOverlay(EntityManager scene, ComponentManager cm) {

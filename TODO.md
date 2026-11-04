@@ -62,6 +62,9 @@
   - [ ] Serialization/deserialization of game data for network transferring
   - The remote gamepad uses an HTTP server for input only; it is not a general game-data transport.
 - [ ] Sounds
+  - [x] Audio asset loading and playback
+    - `AudioAssetLoader` decodes WAV files into 16-bit PCM and uploads them to OpenAL through `Audio`; `AudioSource` handles one-shot and looping playback.
+    - The `application.scene=footsteps` test scene demonstrates moving a third-person player and triggering footstep sounds.
   - [ ] Sounds and music controller API
   - [ ] Different kinds of hardware audio API support
 - [ ] Cross-platform-ness

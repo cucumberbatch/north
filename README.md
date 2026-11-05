@@ -9,10 +9,10 @@ features are added incrementally.
 ---
 
 **Spaceship demo**  
-![Spaceship demo scene](\pic\spaceship_demo.gif)
+![Spaceship demo scene](./pic/spaceship_demo.gif)
 
 **Cube grid demo scene**  
-![Cube grid demo scene](\pic\cube_grid_demo.gif)
+![Cube grid demo scene](./pic/cube_grid_demo.gif)
 
 ---
 

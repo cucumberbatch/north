@@ -28,7 +28,7 @@
         <maven.assembly.version>3.6.0</maven.assembly.version>
         <joml.version>1.9.9</joml.version>
         <lwjgl.version>3.3.3</lwjgl.version>
-        <lwjgl.natives>natives-linux</lwjgl.natives>
+        <lwjgl.natives>natives-windows</lwjgl.natives>
         <junit-jupiter.version>5.8.0</junit-jupiter.version>
         <junit.surefire.version>2.19.1</junit.surefire.version>
         <junit.surefire-provider.version>1.1.0</junit.surefire-provider.version>

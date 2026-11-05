@@ -8,7 +8,7 @@ public abstract class AbstractComponent implements Component {
     public transient Entity entity;
 
     /* Activity state of component */
-    public boolean isActive = true;
+    public boolean active = true;
 
     /* State of component lifecycle */
     private ComponentState state = ComponentState.READY_TO_INIT_STATE;
@@ -29,12 +29,12 @@ public abstract class AbstractComponent implements Component {
 
     @Override
     public boolean isActive() {
-        return isActive;
+        return active;
     }
 
     @Override
     public void setActive(boolean active) {
-        this.isActive = active;
+        this.active = active;
     }
 
     @Override
@@ -53,7 +53,7 @@ public abstract class AbstractComponent implements Component {
     public String toString() {
         return "AbstractComponent{" +
                 "entityId=" + (entity == null ? null : entity.getId()) +
-                ", isActive=" + isActive +
+                ", isActive=" + active +
                 ", state=" + state +
                 '}';
     }

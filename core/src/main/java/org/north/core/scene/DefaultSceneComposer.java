@@ -243,22 +243,25 @@ public class DefaultSceneComposer implements SceneComposer {
                 }
             }
         }
-        
-        Entity theThing = scene.create("theThing");
-        Mesh mesh = assetService.get(Mesh.class, "assets/meshes/the-thing.obj");
-        // Texture texture = assetService.get(Texture.class, "assets/models/character.png");
-        Shader thingShader = assetService.get(Shader.class, "assets/shaders/texture_shader");
 
-        Transform thingTransform = cm.add(theThing, Transform.class);
-        thingTransform.moveTo(-1, -1, -1);
+        //temporary disabled
+        if (false) {
+            Entity theThing = scene.create("theThing");
+            Mesh mesh = assetService.get(Mesh.class, "assets/meshes/the-thing.obj");
+            // Texture texture = assetService.get(Texture.class, "assets/models/character.png");
+            Shader thingShader = assetService.get(Shader.class, "assets/shaders/texture_shader");
 
-        MeshRenderer renderer = cm.add(theThing, MeshRenderer.class);
-        renderer.mesh = mesh;
-        renderer.material = new Material(thingShader)
-                // .setTexture("u_texture", texture)
-                .setVector("u_color", new Vector4f(1f, 1f, 1f, 1f));
+            Transform thingTransform = cm.add(theThing, Transform.class);
+            thingTransform.moveTo(-1, -1, -1);
 
-        cm.add(theThing, MeshCollider.class).space = Space.WORLD;
+            MeshRenderer renderer = cm.add(theThing, MeshRenderer.class);
+            renderer.mesh = mesh;
+            renderer.material = new Material(thingShader)
+                    // .setTexture("u_texture", texture)
+                    .setVector("u_color", new Vector4f(1f, 1f, 1f, 1f));
+
+            cm.add(theThing, MeshCollider.class).space = Space.WORLD;
+        }
 
         Entity cursorEntity = scene.create("visual_cursor");
         Transform cursorTransform = cm.add(cursorEntity, Transform.class);

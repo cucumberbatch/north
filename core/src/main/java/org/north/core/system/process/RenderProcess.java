@@ -1,9 +1,10 @@
 package org.north.core.system.process;
 
-import org.north.core.component.Component;
+import org.north.core.scene.component.Component;
 import org.north.core.graphics.Graphics;
 
-public interface RenderProcess<C extends Component> {
+@FunctionalInterface
+public interface RenderProcess<C extends Component> extends Process {
 
     /**
      * An interface method that renders component content
@@ -11,6 +12,6 @@ public interface RenderProcess<C extends Component> {
      * @param graphics a graphics api for rendering objects
      * @author cucumberbatch
      */
-    default void render(C component, Graphics graphics) {}
+    void render(C component, Graphics graphics);
 
 }

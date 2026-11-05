@@ -1,26 +1,43 @@
-# Compiled class file
-#*.class
+# Compiled class files
+*.class
 
-# Log file
+# Logs
 *.log
 
 # BlueJ files
 *.ctxt
 
-
-
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
-# remove
+# Editors and IDEs
 .idea/
-target/
-
-# Idea files #
 *.iml
+.vscode/
+.fleet/
+.settings/
+.project
+.classpath
+.factorypath
+.helix/
+.history/
+.metadata/
 
-# Package Files #
+# Build tool caches and outputs
+.gradle/
+.kotlin/
+build/
+target/
+out/
+bin/
+apt_generated/
+apt_generated_tests/
+dependency-reduced-pom.xml
+
+# Package files
 *.jar
+# Gradle wrapper jar is part of the build
+!gradle/wrapper/gradle-wrapper.jar
 *.war
 *.nar
 *.ear
@@ -28,5 +45,10 @@ target/
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# OS files
+.DS_Store
+Thumbs.db
+
+# Virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+replay_pid*

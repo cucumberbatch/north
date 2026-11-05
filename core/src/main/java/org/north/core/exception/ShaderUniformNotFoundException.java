@@ -1,26 +1,20 @@
 package org.north.core.exception;
 
 public class ShaderUniformNotFoundException extends RuntimeException {
+    private final int shaderId;
     private final String uniformName;
-    private final String shaderName;
 
-    public ShaderUniformNotFoundException(String uniformName) {
-        super(String.format("Couldn't find uniform variable '%s'!", uniformName));
+    public ShaderUniformNotFoundException(int shaderId, String uniformName) {
+        super(String.format("Unable to find uniform variable '%s' of a shader with id=%d!", uniformName, shaderId));
+        this.shaderId = shaderId;
         this.uniformName = uniformName;
-        this.shaderName = null;
     }
 
-    public ShaderUniformNotFoundException(String uniformName, String shaderName) {
-        super(String.format("Couldn't find uniform variable '%s'!", uniformName));
-        this.uniformName = uniformName;
-        this.shaderName = shaderName;
+    public int shaderId() {
+        return shaderId;
     }
 
-    public String getUniformName() {
+    public String uniformName() {
         return uniformName;
-    }
-
-    public String getShaderName() {
-        return shaderName;
     }
 }

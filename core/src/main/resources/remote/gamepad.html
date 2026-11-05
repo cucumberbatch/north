@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0d1017">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>North Engine &middot; Remote Gamepad</title>
+<style>
+    :root {
+        --bg: #0d1017;
+        --panel: #171c25;
+        --panel-2: #222835;
+        --line: #2d3543;
+        --text: #e9eef7;
+        --muted: #7d8798;
+        --accent: #4f8cff;
+        --accent-2: #33d6a0;
+        --danger: #ff5c6c;
+        --stick-size: clamp(94px, 30vmin, 190px);
+        --knob-size: clamp(38px, 12vmin, 74px);
+        --btn-size: clamp(44px, 12.5vmin, 72px);
+    }
+
+    * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: none;
+        overscroll-behavior: none;
+    }
+
+    #app {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+
+    header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 14px;
+        font-size: 12px;
+        letter-spacing: .04em;
+        color: var(--muted);
+        border-bottom: 1px solid var(--line);
+        background: linear-gradient(180deg, #131822, #0f131b);
+    }
+
+    header .brand {
+        font-weight: 700;
+        color: var(--text);
+        letter-spacing: .12em;
+    }
+
+    header .spacer {
+        flex: 1;
+    }
+
+    .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--danger);
+        box-shadow: 0 0 8px currentColor;
+        flex: none;
+    }
+
+    .dot.online {
+        background: var(--accent-2);
+    }
+
+    .toggle {
+        border: 1px solid var(--line);
+        background: var(--panel);
+        color: var(--muted);
+        border-radius: 999px;
+        padding: 5px 12px;
+        font-size: 11px;
+        letter-spacing: .08em;
+        touch-action: manipulation;
+    }
+
+    .toggle.is-on {
+        color: #06131d;
+        background: var(--accent-2);
+        border-color: var(--accent-2);
+        font-weight: 700;
+    }
+
+    main {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+        gap: 12px;
+        min-height: 0;
+    }
+
+    .group {
+        display: flex;
+        align-items: center;
+        gap: clamp(10px, 4vw, 42px);
+    }
+
+    .stick {
+        position: relative;
+        width: var(--stick-size);
+        height: var(--stick-size);
+        border-radius: 50%;
+        background: radial-gradient(circle at 50% 35%, #232a37, #141821 70%);
+        border: 1px solid var(--line);
+        box-shadow: inset 0 2px 10px rgba(0, 0, 0, .55);
+        flex: none;
+        touch-action: none;
+    }
+
+    .stick .knob {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: var(--knob-size);
+        height: var(--knob-size);
+        margin-left: calc(var(--knob-size) / -2);
+        margin-top: calc(var(--knob-size) / -2);
+        border-radius: 50%;
+        background: linear-gradient(180deg, #47536a, #2a3140);
+        border: 1px solid #55617a;
+        box-shadow: 0 6px 14px rgba(0, 0, 0, .5);
+        transition: transform .04s linear;
+    }
+
+    .stick.is-active .knob {
+        background: linear-gradient(180deg, #5a83d8, #33518f);
+        border-color: #7ea4f0;
+    }
+
+    .stick .caption {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 6px;
+        text-align: center;
+        font-size: 9px;
+        letter-spacing: .18em;
+        color: var(--muted);
+        pointer-events: none;
+    }
+
+    .dpad, .face {
+        display: grid;
+        grid-template-columns: repeat(3, var(--btn-size));
+        grid-template-rows: repeat(3, var(--btn-size));
+        flex: none;
+    }
+
+    .dpad [data-id="dpad_up"]    { grid-area: 1 / 2; }
+    .dpad [data-id="dpad_left"]  { grid-area: 2 / 1; }
+    .dpad [data-id="dpad_right"] { grid-area: 2 / 3; }
+    .dpad [data-id="dpad_down"]  { grid-area: 3 / 2; }
+    .face [data-id="y"] { grid-area: 1 / 2; }
+    .face [data-id="x"] { grid-area: 2 / 1; }
+    .face [data-id="b"] { grid-area: 2 / 3; }
+    .face [data-id="a"] { grid-area: 3 / 2; }
+
+    .pad-btn {
+        width: var(--btn-size);
+        height: var(--btn-size);
+        margin: 2px;
+        border-radius: 50%;
+        border: 1px solid var(--line);
+        background: linear-gradient(180deg, var(--panel-2), var(--panel));
+        color: var(--text);
+        font-size: clamp(11px, 3.4vmin, 17px);
+        font-weight: 700;
+        letter-spacing: .04em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        touch-action: none;
+        padding: 0;
+    }
+
+    .pad-btn.is-active {
+        background: linear-gradient(180deg, #4f8cff, #2f5fc4);
+        border-color: #7ea4f0;
+        transform: scale(.94);
+    }
+
+    .dpad [data-id="dpad_up"] { border-radius: 14px 14px 4px 4px; }
+    .dpad [data-id="dpad_down"] { border-radius: 4px 4px 14px 14px; }
+    .dpad [data-id="dpad_left"] { border-radius: 14px 4px 4px 14px; }
+    .dpad [data-id="dpad_right"] { border-radius: 4px 14px 14px 4px; }
+
+    footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 8px 16px 14px;
+        border-top: 1px solid var(--line);
+        background: linear-gradient(0deg, #131822, #0f131b);
+    }
+
+    .footer-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .wide-btn {
+        min-width: 62px;
+        height: 42px;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: linear-gradient(180deg, var(--panel-2), var(--panel));
+        color: var(--text);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: .08em;
+        touch-action: none;
+    }
+
+    .wide-btn.is-active {
+        background: linear-gradient(180deg, #4f8cff, #2f5fc4);
+        border-color: #7ea4f0;
+    }
+
+    .trigger {
+        position: relative;
+        width: 96px;
+        height: 42px;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: linear-gradient(180deg, var(--panel-2), var(--panel));
+        color: var(--text);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: .08em;
+        overflow: hidden;
+        touch-action: none;
+        padding: 0;
+    }
+
+    .trigger .fill {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, #4f8cff, #2f5fc4);
+        transform: scaleX(0);
+        transform-origin: left center;
+        transition: transform .06s linear;
+    }
+
+    .trigger.is-active .fill {
+        transform: scaleX(1);
+    }
+
+    .trigger span {
+        position: relative;
+        z-index: 1;
+    }
+
+    .system-btn {
+        min-width: 54px;
+        height: 38px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .1em;
+        touch-action: none;
+        padding: 0 8px;
+    }
+
+    .system-btn.is-active {
+        color: #06131d;
+        background: var(--accent-2);
+        border-color: var(--accent-2);
+    }
+
+    @media (orientation: portrait) {
+        main {
+            flex-direction: column;
+            justify-content: space-around;
+            gap: 18px;
+        }
+
+        .group {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        footer {
+            flex-wrap: wrap;
+            justify-content: center;
+            row-gap: 8px;
+            column-gap: 10px;
+        }
+
+        .footer-group {
+            justify-content: center;
+        }
+
+        .footer-group:nth-child(2) {
+            order: 3;
+            width: 100%;
+        }
+
+        .trigger {
+            width: 84px;
+        }
+    }
+</style>
+</head>
+<body>
+<div id="app">
+    <header>
+        <span class="dot" id="status-dot"></span>
+        <span id="status-text">connecting…</span>
+        <span class="spacer"></span>
+        <span class="brand">NORTH ENGINE</span>
+        <button class="toggle" id="look-toggle">LOOK: OFF</button>
+    </header>
+
+    <main>
+        <section class="group">
+            <div class="stick" id="stick-left">
+                <div class="knob"></div>
+                <div class="caption">MOVE</div>
+            </div>
+            <div class="dpad">
+                <button class="pad-btn" data-id="dpad_up">▲</button>
+                <button class="pad-btn" data-id="dpad_left">◀</button>
+                <button class="pad-btn" data-id="dpad_right">▶</button>
+                <button class="pad-btn" data-id="dpad_down">▼</button>
+            </div>
+        </section>
+
+        <section class="group">
+            <div class="face">
+                <button class="pad-btn" data-id="y">Y</button>
+                <button class="pad-btn" data-id="x">X</button>
+                <button class="pad-btn" data-id="b">B</button>
+                <button class="pad-btn" data-id="a">A</button>
+            </div>
+            <div class="stick" id="stick-right">
+                <div class="knob"></div>
+                <div class="caption">LOOK</div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-group">
+            <button class="wide-btn" data-id="l1">L1</button>
+            <button class="trigger" data-id="l2"><span class="fill"></span><span>L2</span></button>
+        </div>
+        <div class="footer-group">
+            <button class="system-btn" data-id="select">SELECT</button>
+            <button class="system-btn" data-id="start">START</button>
+            <button class="system-btn" data-id="pause">PAUSE</button>
+            <button class="system-btn" data-id="lmb">MOUSE</button>
+        </div>
+        <div class="footer-group">
+            <button class="trigger" data-id="r2"><span class="fill"></span><span>R2</span></button>
+            <button class="wide-btn" data-id="r1">R1</button>
+        </div>
+    </footer>
+</div>
+
+<script>
+    (function () {
+        'use strict';
+
+        // ---------------------------------------------------------------- protocol
+
+        // The short codes of the controls, they are handed over by the server when the page is
+        // loaded. Every event of the gamepad costs three to five bytes from here on.
+        var CODES = __CODES_JSON__;
+
+        var EVENT_BUTTON = 1;
+        var EVENT_AXIS = 2;
+        var EVENT_CURSOR = 3;
+        var EVENT_PONG = 4;
+
+        var MESSAGE_ACK = 1;
+        var MESSAGE_PING = 2;
+
+        var AXIS_SCALE = 32767;
+        var AXIS_DEAD_ZONE = 0.14;
+
+        // ---------------------------------------------------------------- state
+
+        var socket = null;
+        var socketReady = false;
+        var reconnectDelay = 500;
+
+        var pending = [];
+        var pendingCount = 0;
+        var flushScheduled = false;
+
+        var cursorDeltaX = 0;
+        var cursorDeltaY = 0;
+
+        var lastAxisSent = {};
+        var activeButtons = {};
+        var activeAxes = {};
+
+        var lookMode = false;
+
+        var statusDot = document.getElementById('status-dot');
+        var statusText = document.getElementById('status-text');
+        var lookToggle = document.getElementById('look-toggle');
+
+        function setStatus(online) {
+            statusDot.classList.toggle('online', online);
+            statusText.textContent = online ? 'connected' : 'offline';
+        }
+
+        // ---------------------------------------------------------------- connection
+
+        function connect() {
+            var protocol = location.protocol === 'https:' ? 'wss://' : 'ws://';
+            try {
+                socket = new WebSocket(protocol + location.host + '/ws');
+            } catch (error) {
+                scheduleReconnect();
+                return;
+            }
+            socket.binaryType = 'arraybuffer';
+
+            socket.onopen = function () {
+                socketReady = true;
+                reconnectDelay = 500;
+                setStatus(true);
+                resync();
+            };
+            socket.onclose = function () {
+                socketReady = false;
+                pending = [];
+                pendingCount = 0;
+                setStatus(false);
+                scheduleReconnect();
+            };
+            socket.onerror = function () {
+                // the close event follows and takes care of the reconnect
+            };
+            socket.onmessage = function (event) {
+                if (typeof event.data === 'string') return;
+                handleServerMessage(new Uint8Array(event.data));
+            };
+        }
+
+        function scheduleReconnect() {
+            setTimeout(connect, reconnectDelay);
+            reconnectDelay = Math.min(reconnectDelay * 2, 5000);
+        }
+
+        /**
+         * Sends the state of the controls which are still active, e.g. after a reconnect.
+         */
+        function resync() {
+            for (var id in activeButtons) {
+                if (!activeButtons.hasOwnProperty(id)) continue;
+                if (activeButtons[id]) queue(encodeButton(id, true), true);
+            }
+            for (var id in activeAxes) {
+                if (!activeAxes.hasOwnProperty(id)) continue;
+                var value = activeAxes[id];
+                if (!value) continue;
+                lastAxisSent[id] = null;
+                queue(encodeAxis(id, value), false);
+            }
+        }
+
+        function handleServerMessage(data) {
+            if (data.length < 2) return;
+
+            var count = data[0];
+            var offset = 1;
+
+            for (var i = 0; i < count && offset < data.length; i++) {
+                var type = data[offset++];
+
+                if (type === MESSAGE_PING) {
+                    if (offset + 8 > data.length) return;
+                    var timestamp = 0;
+                    for (var j = 0; j < 8; j++) timestamp = timestamp * 256 + data[offset + j];
+                    offset += 8;
+                    queue(encodePong(timestamp), true);
+                } else if (type === MESSAGE_ACK) {
+                    offset += 4;
+                }
+            }
+        }
+
+        // ---------------------------------------------------------------- encoding
+
+        function encodeButton(id, pressed) {
+            var code = CODES[id];
+            if (code === undefined) return null;
+            return new Uint8Array([EVENT_BUTTON, code, pressed ? 1 : 0]);
+        }
+
+        function encodeAxis(id, value) {
+            var code = CODES[id];
+            if (code === undefined) return null;
+            var raw = Math.max(-AXIS_SCALE, Math.min(AXIS_SCALE, Math.round(value * AXIS_SCALE)));
+            return new Uint8Array([EVENT_AXIS, code, (raw >> 8) & 0xFF, raw & 0xFF]);
+        }
+
+        function encodeCursor(dx, dy) {
+            var x = Math.max(-32767, Math.min(32767, Math.round(dx)));
+            var y = Math.max(-32767, Math.min(32767, Math.round(dy)));
+            return new Uint8Array([EVENT_CURSOR, (x >> 8) & 0xFF, x & 0xFF, (y >> 8) & 0xFF, y & 0xFF]);
+        }
+
+        function encodePong(timestamp) {
+            var high = Math.floor(timestamp / 4294967296);
+            var low = timestamp - high * 4294967296;
+            return new Uint8Array([
+                EVENT_PONG,
+                (high >>> 24) & 0xFF, (high >>> 16) & 0xFF, (high >>> 8) & 0xFF, high & 0xFF,
+                (low >>> 24) & 0xFF, (low >>> 16) & 0xFF, (low >>> 8) & 0xFF, low & 0xFF
+            ]);
+        }
+
+        // ---------------------------------------------------------------- sending
+
+        /**
+         * Puts an event into the buffer of the outgoing messages.
+         *
+         * @param bytes    the encoded event
+         * @param immediate when the event is a button, it is sent right away, everything else is
+         *                  collected until the next frame
+         */
+        function queue(bytes, immediate) {
+            if (!bytes) return;
+            if (pendingCount >= 255) flush();
+            pending.push(bytes);
+            pendingCount++;
+            if (immediate) flush();
+            else scheduleFlush();
+        }
+
+        function scheduleFlush() {
+            if (flushScheduled) return;
+            flushScheduled = true;
+
+            var done = false;
+            var flushNow = function () {
+                if (done) return;
+                done = true;
+                flushScheduled = false;
+                flush();
+            };
+
+            // the next frame is the fastest way to collect the events of the frame, the timer is
+            // the fallback for a browser which pauses the frames of a hidden tab
+            requestFrame(flushNow);
+            setTimeout(flushNow, 20);
+        }
+
+        function requestFrame(callback) {
+            if (window.requestAnimationFrame) window.requestAnimationFrame(callback);
+            else setTimeout(callback, 16);
+        }
+
+        /**
+         * Sends the collected events, they are packed into as few messages as possible.
+         */
+        function flush() {
+            if (!socketReady || !socket) return;
+
+            if (cursorDeltaX !== 0 || cursorDeltaY !== 0) {
+                pending.push(encodeCursor(cursorDeltaX, cursorDeltaY));
+                pendingCount++;
+                cursorDeltaX = 0;
+                cursorDeltaY = 0;
+            }
+
+            while (pendingCount > 0) {
+                var size = 1;
+                var count = 0;
+                for (var i = 0; i < pending.length && count < 255; i++) {
+                    size += pending[i].length;
+                    count++;
+                }
+
+                var buffer = new Uint8Array(size);
+                buffer[0] = count;
+                var offset = 1;
+                for (var j = 0; j < count; j++) {
+                    buffer.set(pending[j], offset);
+                    offset += pending[j].length;
+                }
+
+                pending = pending.slice(count);
+                pendingCount -= count;
+
+                try {
+                    socket.send(buffer);
+                } catch (error) {
+                    // the connection is broken, the close event triggers a reconnect
+                    break;
+                }
+            }
+        }
+
+        // ---------------------------------------------------------------- controls
+
+        function setButton(id, pressed) {
+            activeButtons[id] = pressed;
+            queue(encodeButton(id, pressed), true);
+        }
+
+        function setAxis(id, value) {
+            activeAxes[id] = value;
+
+            var raw = Math.max(-AXIS_SCALE, Math.min(AXIS_SCALE, Math.round(value * AXIS_SCALE)));
+            if (lastAxisSent[id] === raw) return;
+            lastAxisSent[id] = raw;
+
+            queue(encodeAxis(id, value), false);
+        }
+
+        function moveCursor(dx, dy) {
+            cursorDeltaX += dx;
+            cursorDeltaY += dy;
+            scheduleFlush();
+        }
+
+        // ---------------------------------------------------------------- buttons
+
+        function setupButton(element) {
+            var id = element.getAttribute('data-id');
+            var analog = id === 'l2' || id === 'r2';
+            var activePointers = {};
+
+            element.addEventListener('pointerdown', function (event) {
+                event.preventDefault();
+                try {
+                    element.setPointerCapture(event.pointerId);
+                } catch (error) {
+                    /* not supported */
+                }
+                activePointers[event.pointerId] = true;
+                element.classList.add('is-active');
+                if (analog) {
+                    setAxis(id, 1);
+                } else {
+                    setButton(id, true);
+                }
+            });
+
+            function release(event) {
+                if (!activePointers[event.pointerId]) return;
+                delete activePointers[event.pointerId];
+                for (var pointerId in activePointers) {
+                    if (activePointers.hasOwnProperty(pointerId)) return;
+                }
+                element.classList.remove('is-active');
+                if (analog) {
+                    setAxis(id, 0);
+                } else {
+                    setButton(id, false);
+                }
+            }
+
+            element.addEventListener('pointerup', release);
+            element.addEventListener('pointercancel', release);
+            element.addEventListener('lostpointercapture', release);
+        }
+
+        Array.prototype.forEach.call(document.querySelectorAll('[data-id]'), setupButton);
+
+        // ---------------------------------------------------------------- sticks
+
+        function setupStick(element, horizontalId, verticalId) {
+            var knob = element.querySelector('.knob');
+            var pointerId = null;
+            var originX = 0;
+            var originY = 0;
+            var lastX = 0;
+            var lastY = 0;
+
+            function radius() {
+                return element.clientWidth / 2;
+            }
+
+            function reset() {
+                pointerId = null;
+                knob.style.transform = 'translate(0px, 0px)';
+                element.classList.remove('is-active');
+                if (lookMode) {
+                    cursorDeltaX = 0;
+                    cursorDeltaY = 0;
+                } else {
+                    setAxis(horizontalId, 0);
+                    setAxis(verticalId, 0);
+                }
+            }
+
+            function update(event) {
+                var limit = radius() * 0.78;
+                var dx = event.clientX - originX;
+                var dy = event.clientY - originY;
+
+                var x = dx / limit;
+                var y = -dy / limit;
+                var length = Math.sqrt(x * x + y * y);
+                if (length > 1) {
+                    x = x / length;
+                    y = y / length;
+                    length = 1;
+                }
+
+                if (length < AXIS_DEAD_ZONE) {
+                    x = 0;
+                    y = 0;
+                } else {
+                    var scaled = (length - AXIS_DEAD_ZONE) / (1 - AXIS_DEAD_ZONE);
+                    x = x / length * scaled;
+                    y = y / length * scaled;
+                }
+
+                knob.style.transform = 'translate(' + (x * limit) + 'px,' + (-y * limit) + 'px)';
+
+                if (lookMode) {
+                    moveCursor((x - lastX) * 12, (y - lastY) * 12);
+                } else {
+                    setAxis(horizontalId, x);
+                    setAxis(verticalId, y);
+                }
+
+                lastX = x;
+                lastY = y;
+            }
+
+            element.addEventListener('pointerdown', function (event) {
+                event.preventDefault();
+                pointerId = event.pointerId;
+                try {
+                    element.setPointerCapture(event.pointerId);
+                } catch (error) {
+                    /* not supported */
+                }
+                var rect = element.getBoundingClientRect();
+                originX = rect.left + rect.width / 2;
+                originY = rect.top + rect.height / 2;
+                lastX = 0;
+                lastY = 0;
+                element.classList.add('is-active');
+                update(event);
+            });
+
+            element.addEventListener('pointermove', function (event) {
+                if (event.pointerId !== pointerId) return;
+                event.preventDefault();
+                update(event);
+            });
+
+            element.addEventListener('pointerup', function (event) {
+                if (event.pointerId !== pointerId) return;
+                reset();
+            });
+
+            element.addEventListener('pointercancel', function (event) {
+                if (event.pointerId !== pointerId) return;
+                reset();
+            });
+
+            element.addEventListener('lostpointercapture', function (event) {
+                if (event.pointerId !== pointerId) return;
+                reset();
+            });
+        }
+
+        setupStick(document.getElementById('stick-left'), 'left_x', 'left_y');
+        setupStick(document.getElementById('stick-right'), 'right_x', 'right_y');
+
+        // ---------------------------------------------------------------- look mode
+
+        lookToggle.addEventListener('click', function () {
+            lookMode = !lookMode;
+            lookToggle.textContent = 'LOOK: ' + (lookMode ? 'ON' : 'OFF');
+            lookToggle.classList.toggle('is-on', lookMode);
+        });
+
+        // ---------------------------------------------------------------- keyboard
+
+        var keyButtons = {
+            ' ': 'a',
+            'escape': 'b',
+            'i': 'x',
+            'y': 'y',
+            'q': 'l1',
+            'e': 'r1',
+            'arrowup': 'dpad_up',
+            'arrowdown': 'dpad_down',
+            'arrowleft': 'dpad_left',
+            'arrowright': 'dpad_right',
+            'enter': 'start',
+            'g': 'select',
+            'p': 'pause',
+            'f': 'lmb'
+        };
+
+        var keyAxes = {
+            'left_x': {negative: 'a', positive: 'd'},
+            'left_y': {negative: 's', positive: 'w'},
+            'right_x': {negative: 'j', positive: 'l'},
+            'right_y': {negative: 'k', positive: 'i'}
+        };
+
+        var axisKeyState = {};
+
+        function applyAxisKeyState(id) {
+            var state = axisKeyState[id];
+            var value = (state.positive ? 1 : 0) - (state.negative ? 1 : 0);
+            setAxis(id, value);
+        }
+
+        window.addEventListener('keydown', function (event) {
+            if (event.repeat) return;
+            var key = event.key.toLowerCase();
+
+            var button = keyButtons[key];
+            if (button) {
+                event.preventDefault();
+                setButton(button, true);
+                return;
+            }
+
+            for (var id in keyAxes) {
+                if (!keyAxes.hasOwnProperty(id)) continue;
+                var mapping = keyAxes[id];
+                var state = axisKeyState[id] || (axisKeyState[id] = {negative: false, positive: false});
+                if (mapping.negative === key) {
+                    event.preventDefault();
+                    state.negative = true;
+                    applyAxisKeyState(id);
+                } else if (mapping.positive === key) {
+                    event.preventDefault();
+                    state.positive = true;
+                    applyAxisKeyState(id);
+                }
+            }
+        });
+
+        window.addEventListener('keyup', function (event) {
+            var key = event.key.toLowerCase();
+
+            var button = keyButtons[key];
+            if (button) {
+                setButton(button, false);
+                return;
+            }
+
+            for (var id in keyAxes) {
+                if (!keyAxes.hasOwnProperty(id)) continue;
+                var mapping = keyAxes[id];
+                var state = axisKeyState[id];
+                if (!state) continue;
+                if (mapping.negative === key) {
+                    state.negative = false;
+                    applyAxisKeyState(id);
+                } else if (mapping.positive === key) {
+                    state.positive = false;
+                    applyAxisKeyState(id);
+                }
+            }
+        });
+
+        // ---------------------------------------------------------------- misc
+
+        document.addEventListener('contextmenu', function (event) {
+            event.preventDefault();
+        });
+
+        document.addEventListener('touchmove', function (event) {
+            event.preventDefault();
+        }, {passive: false});
+
+        function closeSocket() {
+            if (!socket) return;
+            try {
+                socket.close();
+            } catch (error) {
+                /* the socket is gone already */
+            }
+        }
+
+        window.addEventListener('beforeunload', closeSocket);
+        window.addEventListener('pagehide', closeSocket);
+
+        connect();
+
+        if (navigator.wakeLock) {
+            try {
+                var wakeLock = navigator.wakeLock.request('screen');
+                if (wakeLock && wakeLock.catch) wakeLock.catch(function () { /* not allowed */ });
+            } catch (error) {
+                /* not supported */
+            }
+        }
+    })();
+</script>
+</body>
+</html>

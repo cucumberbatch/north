@@ -1,9 +1,10 @@
 package org.north.core.system;
 
-import org.north.core.component.MovementComponent;
-import org.north.core.context.ApplicationContext;
-import org.north.core.reflection.ComponentHandler;
-import org.north.core.reflection.di.Inject;
+import org.north.core.architecture.ApplicationContext;
+import org.north.core.architecture.ComponentHandler;
+import org.north.core.architecture.Inject;
+import org.north.core.scene.component.MovementComponent;
+import org.north.core.scene.component.Transform;
 import org.north.core.system.process.InitProcess;
 import org.north.core.system.process.UpdateProcess;
 
@@ -12,24 +13,25 @@ public class MovementSystem extends AbstractSystem<MovementComponent> implements
 
     @Inject
     public MovementSystem(ApplicationContext context) {
-        super(context);
+        super(MovementComponent.class, context);
     }
 
     @Override
     public void init(MovementComponent movementComponent) {
-        movementComponent.initialZ = movementComponent.getTransform().position.z;
+        movementComponent.initialZ = cm.get(movementComponent.getEntity(), Transform.class).getPosition().z;
     }
 
     @Override
     public void update(MovementComponent movementComponent, float dt) {
+        Transform transform = cm.get(movementComponent.getEntity(), Transform.class);
         float acc = movementComponent.acc;
         float range = movementComponent.range;
         float initialZ = movementComponent.initialZ;
 
 
-        movementComponent.getTransform().moveTo(
-                movementComponent.getTransform().position.x,
-                movementComponent.getTransform().position.y,
+        transform.moveTo(
+                transform.getPosition().x,
+                transform.getPosition().y,
                 initialZ + (float) Math.sin(acc) * range
         );
 

@@ -3,6 +3,7 @@ package org.north.core.shape;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.joml.Vector2f;
+import org.north.core.physics.shape.Rectangle;
 
 class RectangleTest {
 
@@ -68,6 +69,19 @@ class RectangleTest {
         Rectangle rect2 = new Rectangle(point3, point8);
 
         Assertions.assertFalse(rect1.isIntersects(rect2));
+    }
+
+    @Test
+    void moveToKeepsSizeAndMovesCenter() {
+        Rectangle rectangle = new Rectangle(new Vector2f(-2f, -1f), new Vector2f(2f, 1f));
+
+        rectangle.moveTo(10f, 20f);
+
+        Assertions.assertEquals(4f, rectangle.width(), 0.0001f);
+        Assertions.assertEquals(2f, rectangle.height(), 0.0001f);
+        Assertions.assertTrue(rectangle.isInside(new Vector2f(10f, 20f)));
+        Assertions.assertEquals(10f, rectangle.getCenter(new Vector2f()).x, 0.0001f);
+        Assertions.assertEquals(20f, rectangle.getCenter(new Vector2f()).y, 0.0001f);
     }
 
 }

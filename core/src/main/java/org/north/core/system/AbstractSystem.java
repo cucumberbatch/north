@@ -1,82 +1,88 @@
 package org.north.core.system;
 
-import org.north.core.architecture.entity.Entity;
-import org.north.core.architecture.tree.EntityTree;
-import org.north.core.architecture.tree.Tree;
-import org.north.core.architecture.entity.ComponentManager;
-import org.north.core.component.Camera;
-import org.north.core.component.Component;
-import org.north.core.context.ApplicationContext;
-import org.north.core.exception.ComponentAlreadyExistsException;
-import org.north.core.exception.ComponentNotFoundException;
-import org.north.core.managment.memory.Vector3fPool;
-import org.north.core.managment.memory.Pool;
 import org.joml.Vector3f;
+import org.north.core.architecture.ApplicationContext;
+import org.north.core.asset.AssetService;
+import org.north.core.exception.ComponentAlreadyExistsException;
+import org.north.core.utils.Pool;
+import org.north.core.utils.Vector3fPool;
+import org.north.core.scene.Entity;
+import org.north.core.scene.EntityManager;
+import org.north.core.scene.component.Component;
+import org.north.core.scene.component.management.ComponentContainer;
+import org.north.core.scene.component.management.ComponentManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public abstract class AbstractSystem<E extends Component> implements System<E> {
+public abstract class AbstractSystem<C extends Component> implements System<C> {
+    
+    protected static final Logger log = LoggerFactory.getLogger(AbstractSystem.class);
 
-    // map for storing componentId-to-component pair
-    private final Map<UUID, E> componentMap = new HashMap<>();
-
-    protected final Pool<Vector3f> vector3fPool;
+    private final Class<C>           componentType;
+    private final Pool<Vector3f>     vector3fPool;
+    private final ComponentContainer container;
+    
     protected final ComponentManager cm;
-    protected final EntityTree et;
+    protected final AssetService     assetService;
+    protected final EntityManager    entityManager;
+    protected final Entity           sceneRoot;
 
-    public AbstractSystem(ApplicationContext context) {
-        this.cm = context.getComponentManager();
-        this.et = (EntityTree) context.getEntityTree();
-        this.vector3fPool = context.getDependency(Vector3fPool.class);
-    }
 
-    public final void setCameraComponent(Camera camera) {
-        cm.setCameraComponent(camera);
-    }
-
-    @Override
-    public final Iterator<E> getComponentIterator() {
-        return componentMap.values().iterator();
-    }
-
-    @Override
-    public final List<E> getComponentList() {
-        return new ArrayList<>(componentMap.values());
+    public AbstractSystem(Class<C> componentType, ApplicationContext context) {
+        this.componentType = componentType;
+        this.container     = context.getDependency(ComponentContainer.class);
+        this.cm            = context.getDependency(ComponentManager.class);
+        this.assetService  = context.getDependency(AssetService.class);
+        this.entityManager = context.getDependency(EntityManager.class);
+        this.sceneRoot     = entityManager.getRoot();
+        this.vector3fPool  = context.getDependency(Vector3fPool.class);
     }
 
     @Override
-    public final E getComponent(UUID componentId) {
-        E component = componentMap.get(componentId);
-        if (component == null) {
-            throw new ComponentNotFoundException(componentId);
-        }
-        return component;
+    public final Iterator<C> getComponentIterator() {
+        return container.getComponentsByType(componentType).iterator();
+    }
+
+    @Override
+    public final List<C> getComponentList() {
+        return new ArrayList<>(container.getComponentsByType(componentType));
+    }
+
+    @Override
+    public Collection<C> getComponentUnmodifiableCollection() {
+        return Collections.unmodifiableCollection(container.getComponentsByType(componentType));
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public final void addComponent(Component component)
+    public final C addComponent(Component component)
             throws IllegalArgumentException, ClassCastException, ComponentAlreadyExistsException {
-        if (componentMap.containsKey(component.getId())) {
+        Entity entity = component.getEntity();
+        if (container.has(entity, componentType)) {
             throw new ComponentAlreadyExistsException(component.getClass());
         }
-        componentMap.put(component.getId(), (E) component);
+        return (C) component;
         // Logger.debug(String.format("Component added [id=%d type=%s]", component.getId(), component.getClass().getSimpleName()));
     }
 
     @Override
-    public final E removeComponent(UUID componentId) {
-        return componentMap.remove(componentId);
-    }
-
-    @Override
-    public final E removeComponent(Class<E> componentClass) {
-        return null;//componentMap.
+    public final C removeComponent(Component component) {
+        return container.remove(component.getEntity(), componentType);
     }
 
     @Override
     public void reset() {
-        componentMap.clear();
+        return;
+    }
+
+    protected Vector3f vec3f() {
+        return vector3fPool.get();
+    }
+
+    protected void putBack(Vector3f vector) {
+        vector3fPool.put(vector);
     }
 
 

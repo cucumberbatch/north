@@ -19,34 +19,9 @@
     <packaging>jar</packaging>
 
     <properties>
+        <slf4j.version>2.0.7</slf4j.version>
+        <logback.version>1.4.7</logback.version>
     </properties>
-
-    <build>
-        <filters>
-            <filter>src/main/resources/application.properties</filter>
-        </filters>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>${maven.jar.version}</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <mainClass>org.north.core.MainThread</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
     <dependencies>
         <dependency>
@@ -108,7 +83,115 @@
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
     </dependencies>
+
+    <build>
+        <filters>
+            <filter>src/main/resources/north.properties</filter>
+        </filters>
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <nonFilteredFileExtensions>
+                        <nonFilteredFileExtension>wav</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>ogg</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>mp3</nonFilteredFileExtension>
+                    </nonFilteredFileExtensions>
+                </configuration>
+            </plugin>
+
+            <!-- Плагин для создания JAR с Class-Path в манифесте -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>org.north.core.architecture.MainThread</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <!-- Плагин для копирования зависимостей в lib/ -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>false</overWriteSnapshots>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                            <includeScope>runtime</includeScope>
+                            <excludeArtifactIds>
+                                lwjgl-natives-windows,lwjgl-natives-linux,lwjgl-natives-macos,
+                                lwjgl-assimp-natives-windows,lwjgl-assimp-natives-linux,lwjgl-assimp-natives-macos,
+                                lwjgl-glfw-natives-windows,lwjgl-glfw-natives-linux,lwjgl-glfw-natives-macos,
+                                lwjgl-openal-natives-windows,lwjgl-openal-natives-linux,lwjgl-openal-natives-macos,
+                                lwjgl-opengl-natives-windows,lwjgl-opengl-natives-linux,lwjgl-opengl-natives-macos,
+                                lwjgl-stb-natives-windows,lwjgl-stb-natives-linux,lwjgl-stb-natives-macos
+                            </excludeArtifactIds>
+                        </configuration>
+                    </execution>
+
+                    <!-- Отдельное копирование нативных библиотек -->
+                    <execution>
+                        <id>copy-native-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/natives</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>false</overWriteSnapshots>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                            <includeArtifactIds>
+                                lwjgl-natives-windows,lwjgl-natives-linux,lwjgl-natives-macos,
+                                lwjgl-assimp-natives-windows,lwjgl-assimp-natives-linux,lwjgl-assimp-natives-macos,
+                                lwjgl-glfw-natives-windows,lwjgl-glfw-natives-linux,lwjgl-glfw-natives-macos,
+                                lwjgl-openal-natives-windows,lwjgl-openal-natives-linux,lwjgl-openal-natives-macos,
+                                lwjgl-opengl-natives-windows,lwjgl-opengl-natives-linux,lwjgl-opengl-natives-macos,
+                                lwjgl-stb-natives-windows,lwjgl-stb-natives-linux,lwjgl-stb-natives-macos
+                            </includeArtifactIds>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Компилятор -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

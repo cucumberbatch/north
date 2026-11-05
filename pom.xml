@@ -23,56 +23,18 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.version>3.8.1</maven.compiler.version>
         <maven.jar.version>3.1.0</maven.jar.version>
+        <maven.shade.version>3.2.4</maven.shade.version>
+        <maven.dependency.version>3.6.0</maven.dependency.version>
+        <maven.assembly.version>3.6.0</maven.assembly.version>
         <joml.version>1.9.9</joml.version>
-        <lwjgl.version>3.2.3</lwjgl.version>
+        <lwjgl.version>3.3.3</lwjgl.version>
         <lwjgl.natives>natives-windows</lwjgl.natives>
         <junit-jupiter.version>5.8.0</junit-jupiter.version>
         <junit.surefire.version>2.19.1</junit.surefire.version>
         <junit.surefire-provider.version>1.1.0</junit.surefire-provider.version>
-	</properties>
-
-    <build>
-        <resources>
-            <resource>
-                <directory>core/src/main/resources</directory>
-                <includes>
-                    <include>**/*.xml</include>
-                    <include>**/*.frag</include>
-                    <include>**/*.vert</include>
-                    <include>**/*.png</include>
-                    <include>**/*.jpeg</include>
-                </includes>
-            </resource>
-        </resources>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${junit.surefire.version}</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.junit.platform</groupId>
-                        <artifactId>junit-platform-surefire-provider</artifactId>
-                        <version>${junit.surefire-provider.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.junit.jupiter</groupId>
-                        <artifactId>junit-jupiter-engine</artifactId>
-                        <version>${junit-jupiter.version}</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven.compiler.version}</version>
-                <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+        <slf4j.version>2.0.7</slf4j.version>
+        <logback.version>1.4.7</logback.version>
+    </properties>
 
     <dependencyManagement>
         <dependencies>
@@ -148,7 +110,45 @@
                 <version>${junit-jupiter.version}</version>
                 <scope>test</scope>
             </dependency>
-
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
+
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven.compiler.version}</version>
+                    <configuration>
+                        <source>${maven.compiler.source}</source>
+                        <target>${maven.compiler.target}</target>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${maven.jar.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>${maven.dependency.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
 </project>

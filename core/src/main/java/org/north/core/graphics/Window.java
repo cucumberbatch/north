@@ -1,18 +1,19 @@
 package org.north.core.graphics;
 
-import org.north.core.config.EngineConfig;
-import org.north.core.context.ApplicationContext;
-import org.north.core.physics.collision.MeshTransformListener;
-import org.north.core.reflection.di.Inject;
-import org.north.core.system.CameraControlsSystem;
-import org.north.core.system.Input;
-
-import org.lwjgl.glfw.*;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.joml.Vector2f;
+import org.lwjgl.glfw.Callbacks;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
-import org.joml.Vector2f;
+import org.north.core.config.ApplicationProperties;
+import org.north.core.system.CameraControlsSystem;
+import org.north.core.system.Input;
+import org.north.core.utils.Stopwatch;
 
 import java.nio.IntBuffer;
 
@@ -20,23 +21,30 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window {
+    private static final Logger log = LoggerFactory.getLogger(Window.class);
+
     public final String title;
-    public static int width;
-    public static int height;
+    private static int width;
+    private static int height;
 
     public int getWidth() { return width; }
     public int getHeight() { return height; }
 
+    public static void setSize(int newWidth, int newHeight) {
+        width  = newWidth;
+        height = newHeight;
+    }
+
     private long window = -1;
     private final boolean vSync;
 
-    @Inject
-    public Window(ApplicationContext context) throws ReflectiveOperationException {
-        EngineConfig config = context.getDependency(EngineConfig.class);
-        this.width = config.windowWidth;
-        this.height = config.windowHeight;
-        this.title = config.windowTitle;
-        this.vSync = config.vsync;
+    public Window() {
+        this(
+                ApplicationProperties.getProperty("application.window.title"),
+                ApplicationProperties.getInt("application.window.width"),
+                ApplicationProperties.getInt("application.window.height"),
+                ApplicationProperties.getBoolean("application.window.vsync")
+        );
     }
 
     public Window(String title, int width, int height, boolean vSync) {
@@ -46,23 +54,20 @@ public class Window {
         this.vSync = vSync;
     }
 
-    public void init() {
-        // Logger.info("Window initialization started");
+    public void init(Graphics graphics) {
+        Stopwatch.start();
         if (window != -1) return;
 
-        GLFW.glfwSetErrorCallback((code, message) -> {
-            // Logger.error(String.format("err_code 0x%08X: %s ", code, message));
-        });
+        GLFW.glfwSetErrorCallback((code, message) -> log.error(String.format("err_code 0x%08X: %s ", code, message)));
 
         if (!GLFW.glfwInit()) {
             throw new IllegalStateException("Unable to initialize GLFW");
         }
 
         GLFW.glfwDefaultWindowHints(); // optional, the current window hints are already the default
-        GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GL30.GL_TRUE);
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 2);
-        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GL30.GL_TRUE);
+        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GLFW.GLFW_TRUE);
         GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
         GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE); // the window will stay hidden after creation
         GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE); // the window will be resizable
@@ -73,17 +78,16 @@ public class Window {
             throw new RuntimeException("Failed to create the GLFW window");
 
         // Setting up input callback handlers
-        GLFW.glfwSetKeyCallback(window, new Input.KeyboardInput());
-        GLFW.glfwSetMouseButtonCallback(window, new Input.MouseInput());
-        GLFW.glfwSetCursorPosCallback(window, new Input.CursorPositionInput());
-        GLFW.glfwSetWindowSizeCallback(window, (window, width, height) -> new CameraControlsSystem.WindowSizeCallback());
+        GLFW.glfwSetKeyCallback(window, new Input.KeyboardInputCallback());
+        GLFW.glfwSetMouseButtonCallback(window, new Input.MouseInputCallback());
+        GLFW.glfwSetCursorPosCallback(window, new Input.CursorPositionCallback());
+        GLFW.glfwSetWindowSizeCallback(window, new CameraControlsSystem.WindowSizeCallback(graphics));
 
 
-        //
 //        GLFW.glfwSetWindowRefreshCallback(window, new GLFWWindowRefreshCallback() {
 //            @Override
 //            public void invoke(long l) {
-//                // Logger.info(String.format("Refreshed window[%s] value[%s]", window, l));
+//                 log.info(String.format("Refreshed window[%s] value[%s]", window, l));
 //            }
 //        });
 
@@ -94,13 +98,16 @@ public class Window {
             GLFW.glfwGetWindowSize(window, pWidth, pHeight);
 
             // Get the resolution of the primary monitor
-            GLFWVidMode vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
+            GLFWVidMode videoMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
+
+            if (videoMode == null)
+                throw new RuntimeException("Video mode is not found!");
 
             // Center the window
             GLFW.glfwSetWindowPos(
                     window,
-                    (vidmode.width() - pWidth.get(0)) / 2,
-                    (vidmode.height() - pHeight.get(0)) / 2
+                    (videoMode.width() - pWidth.get(0)) / 2 * 8 / 5,
+                    (videoMode.height() - pHeight.get(0)) / 2
             );
         }
         // the stack frame is popped automatically
@@ -123,13 +130,13 @@ public class Window {
 
         // enable blending
         GL30.glEnable(GL30.GL_BLEND);
-        GL30.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL30.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE);
 
-        // Logger.info("Window initialization ended");
+        Stopwatch.stop("Window initialization completed");
     }
 
-    public void destroy() {
-        // Logger.info("Window destruction process started");
+    public void destroy(Graphics graphics) {
+        log.info("Window destruction process started");
 
         if (window == -1) return;
 
@@ -139,10 +146,7 @@ public class Window {
         GLFW.glfwTerminate();
         GLFW.glfwSetErrorCallback(null).free();
 
-        // when we hit an exit button in application we need to stop all threads
-        MeshTransformListener.shutdownThreadExecution();
-
-        // Logger.info("Window destruction process ended");
+        log.info("Window destruction process ended");
     }
 
     public static Vector2f translatePointToWindow(Vector2f point) {

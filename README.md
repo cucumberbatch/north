@@ -75,7 +75,7 @@ core/src/main/java/org/north/core/
 └── utils/          small helpers (pooling, buffers, timing)
 ```
 
-Main class: `org.north.core.architecture.MainThread`.
+Main class: `io.github.cucumberbatch.north.architecture.Application`.
 
 Assets live in `core/src/main/resources/assets/` and are loaded by classpath path.
 

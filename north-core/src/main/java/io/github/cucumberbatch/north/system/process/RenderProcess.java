@@ -1,7 +1,7 @@
 package io.github.cucumberbatch.north.system.process;
 
-import io.github.cucumberbatch.north.scene.component.Component;
 import io.github.cucumberbatch.north.graphics.Graphics;
+import io.github.cucumberbatch.north.scene.component.Component;
 
 @FunctionalInterface
 public interface RenderProcess<C extends Component> extends Process {

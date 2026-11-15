@@ -3,11 +3,12 @@ package io.github.cucumberbatch.north.system;
 import io.github.cucumberbatch.north.architecture.ApplicationContext;
 import io.github.cucumberbatch.north.architecture.ComponentHandler;
 import io.github.cucumberbatch.north.architecture.Inject;
+import io.github.cucumberbatch.north.graphics.Graphics;
+import io.github.cucumberbatch.north.graphics.OpenGLGraphics;
 import io.github.cucumberbatch.north.scene.component.Camera;
 import io.github.cucumberbatch.north.scene.component.CameraControls;
 import io.github.cucumberbatch.north.scene.component.Transform;
 import io.github.cucumberbatch.north.config.ApplicationProperties;
-import io.github.cucumberbatch.north.graphics.Graphics;
 import io.github.cucumberbatch.north.graphics.Window;
 import io.github.cucumberbatch.north.system.process.InputHandlerProcess;
 import io.github.cucumberbatch.north.system.process.InitProcess;
@@ -32,7 +33,7 @@ public class CameraControlsSystem extends AbstractSystem<CameraControls>
 
     private static ProjectionState projectionState = ProjectionState.ORTHOGRAPHIC_TO_PERSPECTIVE_VIEW_STATE;
     private static Camera camera;
-    private final Graphics graphics;
+    private final OpenGLGraphics graphics;
     private final boolean intermediateCameraStateOnFocusLossEnabled;
 
     //todo implement camera trace effect
@@ -73,7 +74,7 @@ public class CameraControlsSystem extends AbstractSystem<CameraControls>
     @Inject
     public CameraControlsSystem(ApplicationContext context) throws ReflectiveOperationException {
         super(CameraControls.class, context);
-        this.graphics = context.getDependency(Graphics.class);
+        this.graphics = context.getDependency(OpenGLGraphics.class);
         this.intermediateCameraStateOnFocusLossEnabled =
                 ApplicationProperties.getBoolean("application.editor.camera.intermediate-state-on-focus-loss");
     }
@@ -109,7 +110,7 @@ public class CameraControlsSystem extends AbstractSystem<CameraControls>
     }
 
 //    @Override
-//    public void render(CameraControls cameraControls, Graphics graphics) {
+//    public void render(CameraControls cameraControls, OpenGLGraphics graphics) {
 //
 //    }
 
@@ -172,7 +173,7 @@ public class CameraControlsSystem extends AbstractSystem<CameraControls>
     private final double HALF_PI = PI / 2;
     private final double SIN_OF_HALF_PI = Math.sin(HALF_PI);
 
-    private void updateCameraProjection(Graphics graphics, float deltaTime) {
+    private void updateCameraProjection(OpenGLGraphics graphics, float deltaTime) {
         updateViewportProjection(graphics);
 
         if (key1IsPressed) {
@@ -229,7 +230,7 @@ public class CameraControlsSystem extends AbstractSystem<CameraControls>
             default:
                 break;
         }
-        graphics.projection = camera.projectionMatrix;
+        graphics.projection().set(camera.projectionMatrix);
     }
 
     /**
@@ -238,7 +239,7 @@ public class CameraControlsSystem extends AbstractSystem<CameraControls>
      * {@code camera.projectionMatrix} to {@code graphics.projection} every frame, so this matrix
      * has to be refreshed as well after a resize/fullscreen transition.
      */
-    private void updateViewportProjection(Graphics graphics) {
+    private void updateViewportProjection(OpenGLGraphics graphics) {
         if (camera == null) return;
 
         int width  = graphics.window.getWidth();
@@ -251,7 +252,7 @@ public class CameraControlsSystem extends AbstractSystem<CameraControls>
         camera.ratio = aspect;
         CameraSystem.updateProjectionMatrices(camera);
         resetProjectionMatrixForCurrentState();
-        graphics.projection = camera.projectionMatrix;
+        graphics.projection().set(camera.projectionMatrix);
     }
 
     /**
@@ -366,7 +367,7 @@ public class CameraControlsSystem extends AbstractSystem<CameraControls>
         putBack(vec3f);
         putBack(point);
 
-        graphics.view = camera.viewMatrix;
+        graphics.view().set(camera.viewMatrix);
     }
 
     private float restrictAngle(float angle, float lowest, float highest) {

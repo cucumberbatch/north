@@ -2,6 +2,7 @@ package io.github.cucumberbatch.north.system;
 
 import java.util.Random;
 
+import io.github.cucumberbatch.north.graphics.Graphics;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import io.github.cucumberbatch.north.architecture.ApplicationContext;
@@ -9,7 +10,7 @@ import io.github.cucumberbatch.north.architecture.ComponentHandler;
 import io.github.cucumberbatch.north.architecture.Inject;
 import io.github.cucumberbatch.north.audio.Audio;
 import io.github.cucumberbatch.north.audio.AudioSource;
-import io.github.cucumberbatch.north.graphics.Graphics;
+import io.github.cucumberbatch.north.graphics.OpenGLGraphics;
 import io.github.cucumberbatch.north.scene.component.Camera;
 import io.github.cucumberbatch.north.scene.component.FootstepPlayer;
 import io.github.cucumberbatch.north.scene.component.Transform;
@@ -114,8 +115,9 @@ public class FootstepPlayerSystem extends AbstractSystem<FootstepPlayer>
         camera.at.set(lookAt);
         camera.viewMatrix.identity().lookAt(camera.eye, camera.at, up);
 
-        graphics.view = camera.viewMatrix;
-        graphics.projection = camera.projectionMatrix;
+        // todo: implements setters for view/projection
+        graphics.view().set(camera.viewMatrix);
+        graphics.projection().set(camera.projectionMatrix);
 
         audio.setListenerPosition(cameraPosition);
         forward.set(lookAt).sub(cameraPosition).normalize();

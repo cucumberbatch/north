@@ -1,9 +1,9 @@
 package io.github.cucumberbatch.north.asset.loader;
 
 import io.github.cucumberbatch.north.asset.AssetService;
+import io.github.cucumberbatch.north.graphics.Graphics;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import io.github.cucumberbatch.north.graphics.Graphics;
 import io.github.cucumberbatch.north.graphics.Mesh;
 import io.github.cucumberbatch.north.io.ResourceLoader;
 

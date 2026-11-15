@@ -2,6 +2,7 @@ package io.github.cucumberbatch.north.system;
 
 import io.github.cucumberbatch.north.architecture.ApplicationContext;
 import io.github.cucumberbatch.north.graphics.Graphics;
+import io.github.cucumberbatch.north.graphics.Window;
 import io.github.cucumberbatch.north.scene.component.Camera;
 import io.github.cucumberbatch.north.architecture.ComponentHandler;
 import io.github.cucumberbatch.north.architecture.Inject;
@@ -20,17 +21,19 @@ public class CameraSystem extends AbstractSystem<Camera>
 
     private final CameraAwareService cameraAwareService;
     private final Graphics graphics;
+    private final Window window;
 
     @Inject
     public CameraSystem(ApplicationContext context) {
         super(Camera.class, context);
         cameraAwareService = context.getDependency(CameraAwareService.class);
         graphics = context.getDependency(Graphics.class);
+        window = context.getDependency(Window.class);
     }
 
     @Override
     public void init(Camera camera) throws RuntimeException {
-        camera.ratio = (float) graphics.window.getWidth() / Math.max(1, graphics.window.getHeight());
+        camera.ratio = (float) window.getWidth() / Math.max(1, window.getHeight());
         updateProjectionMatrices(camera);
 
         camera.eye.set(0f, -1f, 0f);

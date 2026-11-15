@@ -1,8 +1,9 @@
 package io.github.cucumberbatch.north.architecture;
 
 import io.github.cucumberbatch.north.audio.Audio;
-import io.github.cucumberbatch.north.scene.component.management.ComponentManager;
 import io.github.cucumberbatch.north.graphics.Graphics;
+import io.github.cucumberbatch.north.graphics.OpenGLGraphics;
+import io.github.cucumberbatch.north.scene.component.management.ComponentManager;
 import io.github.cucumberbatch.north.graphics.Window;
 import io.github.cucumberbatch.north.system.SystemManager;
 import io.github.cucumberbatch.north.system.remote.RemoteInputServer;
@@ -26,7 +27,7 @@ public class Engine {
         window = new Window();
         context.addDependency(Window.class, window);
 
-        graphics = new Graphics(window);
+        graphics = new OpenGLGraphics(window);
         context.addDependency(Graphics.class, graphics);
 
         audio = new Audio();

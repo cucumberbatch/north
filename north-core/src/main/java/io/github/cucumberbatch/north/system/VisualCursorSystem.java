@@ -1,5 +1,6 @@
 package io.github.cucumberbatch.north.system;
 
+import io.github.cucumberbatch.north.graphics.OpenGLGraphics;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -9,7 +10,6 @@ import io.github.cucumberbatch.north.architecture.ApplicationContext;
 import io.github.cucumberbatch.north.architecture.ComponentHandler;
 import io.github.cucumberbatch.north.architecture.Inject;
 import io.github.cucumberbatch.north.exception.ComponentNotFoundException;
-import io.github.cucumberbatch.north.graphics.Graphics;
 import io.github.cucumberbatch.north.graphics.Material;
 import io.github.cucumberbatch.north.graphics.PredefinedMeshes;
 import io.github.cucumberbatch.north.graphics.Window;
@@ -47,7 +47,7 @@ public class VisualCursorSystem extends AbstractSystem<VisualCursor>
 
     private final Input input;
     private final Window window;
-    private final Graphics graphics;
+    private final OpenGLGraphics graphics;
     private final SceneSpatialIndex spatialIndex;
 
     private final Vector2f pointer        = new Vector2f();
@@ -73,7 +73,7 @@ public class VisualCursorSystem extends AbstractSystem<VisualCursor>
         super(VisualCursor.class, context);
         this.input        = context.getDependency(Input.class);
         this.window       = context.getDependency(Window.class);
-        this.graphics     = context.getDependency(Graphics.class);
+        this.graphics     = context.getDependency(OpenGLGraphics.class);
         this.spatialIndex = context.getDependency(SceneSpatialIndex.class);
     }
 
@@ -261,7 +261,7 @@ public class VisualCursorSystem extends AbstractSystem<VisualCursor>
         int height = window.getHeight();
         if (width <= 0 || height <= 0) return false;
 
-        viewProjection.set(graphics.projection).mul(graphics.view);
+        viewProjection.set(graphics.projection()).mul(graphics.view());
 
         viewport[0] = 0;
         viewport[1] = 0;
@@ -294,7 +294,7 @@ public class VisualCursorSystem extends AbstractSystem<VisualCursor>
         int height = window.getHeight();
         if (width <= 0 || height <= 0 || bounds == null || bounds.isEmpty()) return false;
 
-        viewProjection.set(graphics.projection).mul(graphics.view);
+        viewProjection.set(graphics.projection()).mul(graphics.view());
 
         float minX = Float.POSITIVE_INFINITY;
         float minY = Float.POSITIVE_INFINITY;

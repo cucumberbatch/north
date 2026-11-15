@@ -1,16 +1,12 @@
 package io.github.cucumberbatch.north.system;
 
+import io.github.cucumberbatch.north.graphics.*;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 import io.github.cucumberbatch.north.architecture.ApplicationContext;
 import io.github.cucumberbatch.north.architecture.ComponentHandler;
 import io.github.cucumberbatch.north.architecture.Inject;
 import io.github.cucumberbatch.north.exception.ComponentNotFoundException;
-import io.github.cucumberbatch.north.graphics.Graphics;
-import io.github.cucumberbatch.north.graphics.Material;
-import io.github.cucumberbatch.north.graphics.PredefinedMeshes;
-import io.github.cucumberbatch.north.graphics.Texture;
-import io.github.cucumberbatch.north.graphics.Window;
 import io.github.cucumberbatch.north.graphics.shader.Shader;
 import io.github.cucumberbatch.north.scene.Entity;
 import io.github.cucumberbatch.north.scene.component.MeshRenderer;
@@ -53,7 +49,7 @@ public class VisualCursorLabelSystem extends AbstractSystem<VisualCursorLabel>
     @Inject
     public VisualCursorLabelSystem(ApplicationContext context) {
         super(VisualCursorLabel.class, context);
-        this.graphics = context.getDependency(Graphics.class);
+        this.graphics = context.getDependency(OpenGLGraphics.class);
         this.window = context.getDependency(Window.class);
     }
 

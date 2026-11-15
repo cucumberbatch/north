@@ -1,5 +1,6 @@
 package io.github.cucumberbatch.north.architecture;
 
+import io.github.cucumberbatch.north.graphics.Graphics;
 import org.lwjgl.glfw.GLFW;
 import io.github.cucumberbatch.north.asset.AssetService;
 import io.github.cucumberbatch.north.asset.SimpleAssetService;
@@ -7,7 +8,6 @@ import io.github.cucumberbatch.north.audio.Audio;
 import io.github.cucumberbatch.north.config.ApplicationProperties;
 import io.github.cucumberbatch.north.exception.ComponentNotFoundException;
 import io.github.cucumberbatch.north.exception.ShaderUniformNotFoundException;
-import io.github.cucumberbatch.north.graphics.Graphics;
 import io.github.cucumberbatch.north.graphics.Window;
 import io.github.cucumberbatch.north.system.SystemManager;
 import io.github.cucumberbatch.north.physics.spatial.Aabb;
@@ -533,11 +533,11 @@ public class Pipeline implements Runnable {
             }
         }
 
-//        Stopwatch.stop("Graphics systems handling ended!");
+//        Stopwatch.stop("OpenGLGraphics systems handling ended!");
 
 //        Stopwatch.start();
         glfwSwapBuffers(window.getWindow());
-//        Stopwatch.stop("Graphics buffer swap ended!");
+//        Stopwatch.stop("OpenGLGraphics buffer swap ended!");
     }
 
 

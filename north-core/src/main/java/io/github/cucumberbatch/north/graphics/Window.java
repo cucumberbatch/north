@@ -83,14 +83,6 @@ public class Window {
         GLFW.glfwSetCursorPosCallback(window, new Input.CursorPositionCallback());
         GLFW.glfwSetWindowSizeCallback(window, new CameraControlsSystem.WindowSizeCallback(graphics));
 
-
-//        GLFW.glfwSetWindowRefreshCallback(window, new GLFWWindowRefreshCallback() {
-//            @Override
-//            public void invoke(long l) {
-//                 log.info(String.format("Refreshed window[%s] value[%s]", window, l));
-//            }
-//        });
-
         // Get the thread stack and push a new frame
         try (MemoryStack stack = stackPush()) {
             IntBuffer pWidth = stack.mallocInt(1); // int*

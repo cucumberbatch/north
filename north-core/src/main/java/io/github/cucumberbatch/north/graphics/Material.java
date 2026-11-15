@@ -98,11 +98,11 @@ public class Material {
     }
 
     public void apply(Graphics graphics) {
-        apply(graphics, null, graphics.projection, graphics.view);
+        apply(graphics, null, graphics.projection(), graphics.view());
     }
 
     public void apply(Graphics graphics, Matrix4f modelMatrix) {
-        apply(graphics, modelMatrix, graphics.projection, graphics.view);
+        apply(graphics, modelMatrix, graphics.projection(), graphics.view());
     }
 
     public void apply(Graphics graphics,

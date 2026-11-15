@@ -6,14 +6,14 @@
     <parent>
         <groupId>io.github.cucumberbatch.north</groupId>
         <artifactId>north</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <name>North Structures</name>
     <description>A north game engine data structures</description>
 
     <artifactId>north-structures</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>${revision}</version>
     <packaging>jar</packaging>
 
     <properties>

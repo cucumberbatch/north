@@ -6,14 +6,14 @@
     <parent>
         <artifactId>north</artifactId>
         <groupId>io.github.cucumberbatch.north</groupId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <name>North Engine Core</name>
     <description>A North game engine core</description>
 
     <artifactId>north-core</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>${revision}</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -22,6 +22,12 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>io.github.cucumberbatch.north</groupId>
+            <artifactId>north-structures</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl-assimp</artifactId>

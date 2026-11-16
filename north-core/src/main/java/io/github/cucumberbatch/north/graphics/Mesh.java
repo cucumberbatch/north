@@ -23,26 +23,6 @@ public class Mesh implements Asset {
 
     private Aabb bounds;
 
-    public Mesh() {
-        this(new float[]{
-                -1.0f, -1.0f, +0.0f,
-                -1.0f, +1.0f, +0.0f,
-                +1.0f, +1.0f, +0.0f,
-                +1.0f, -1.0f, +0.0f
-        }, new int[]{
-                0, 1, 2, 2, 3, 0,
-        }, new float[]{
-                0,  1,
-                0,  0,
-                1,  0,
-                1,  1
-        });
-    }
-
-    public Mesh(float[] vertices, byte[] indices, float[] uv) {
-        this(vertices, toUnsignedIntArray(indices), uv);
-    }
-
     public Mesh(float[] vertices, int[] indices, float[] uv) {
         if (vertices == null || vertices.length % 3 != 0) {
             throw new IllegalArgumentException("Vertex data must contain complete xyz triples");
@@ -56,17 +36,6 @@ public class Mesh implements Asset {
         this.vertices = vertices;
         this.indices  = indices;
         this.uv       = uv;
-    }
-
-    private static int[] toUnsignedIntArray(byte[] indices) {
-        if (indices == null) {
-            return null;
-        }
-        int[] converted = new int[indices.length];
-        for (int i = 0; i < indices.length; i++) {
-            converted[i] = indices[i] & 0xFF;
-        }
-        return converted;
     }
 
     @Override

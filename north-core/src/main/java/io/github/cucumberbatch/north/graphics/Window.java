@@ -11,7 +11,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
 import io.github.cucumberbatch.north.config.ApplicationProperties;
-import io.github.cucumberbatch.north.system.CameraControlsSystem;
 import io.github.cucumberbatch.north.system.Input;
 import io.github.cucumberbatch.north.utils.Stopwatch;
 
@@ -81,7 +80,7 @@ public class Window {
         GLFW.glfwSetKeyCallback(window, new Input.KeyboardInputCallback());
         GLFW.glfwSetMouseButtonCallback(window, new Input.MouseInputCallback());
         GLFW.glfwSetCursorPosCallback(window, new Input.CursorPositionCallback());
-        GLFW.glfwSetWindowSizeCallback(window, new CameraControlsSystem.WindowSizeCallback(graphics));
+        GLFW.glfwSetWindowSizeCallback(window, new OpenGLWindowSizeCallback(graphics));
 
         // Get the thread stack and push a new frame
         try (MemoryStack stack = stackPush()) {

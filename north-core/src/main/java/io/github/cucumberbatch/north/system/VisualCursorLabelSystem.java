@@ -49,7 +49,7 @@ public class VisualCursorLabelSystem extends AbstractSystem<VisualCursorLabel>
     @Inject
     public VisualCursorLabelSystem(ApplicationContext context) {
         super(VisualCursorLabel.class, context);
-        this.graphics = context.getDependency(OpenGLGraphics.class);
+        this.graphics = context.getDependency(Graphics.class);
         this.window = context.getDependency(Window.class);
     }
 

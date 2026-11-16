@@ -10,7 +10,6 @@ import io.github.cucumberbatch.north.architecture.ComponentHandler;
 import io.github.cucumberbatch.north.architecture.Inject;
 import io.github.cucumberbatch.north.audio.Audio;
 import io.github.cucumberbatch.north.audio.AudioSource;
-import io.github.cucumberbatch.north.graphics.OpenGLGraphics;
 import io.github.cucumberbatch.north.scene.component.Camera;
 import io.github.cucumberbatch.north.scene.component.FootstepPlayer;
 import io.github.cucumberbatch.north.scene.component.Transform;

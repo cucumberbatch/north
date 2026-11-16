@@ -12,7 +12,7 @@ public class PredefinedMeshes {
                     -0.5f, -0.5f, -0.5f, // 7
                      0.5f, -0.5f, -0.5f, // 8
             },
-            new byte[]{
+            new int[]{
                     0, 1, 3,
                     3, 1, 2,
                     4, 0, 3,
@@ -45,7 +45,7 @@ public class PredefinedMeshes {
                      0.5f, -0.5f, 0.0f,
                      0.5f,  0.5f, 0.0f
             },
-            new byte[]{ 0, 1, 2, 2, 3, 0 },
+            new int[]{ 0, 1, 2, 2, 3, 0 },
             new float[]{
                     0,  1,
                     0,  0,

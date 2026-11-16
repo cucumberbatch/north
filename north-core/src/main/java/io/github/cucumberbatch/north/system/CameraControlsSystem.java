@@ -14,7 +14,6 @@ import io.github.cucumberbatch.north.system.process.InitProcess;
 import io.github.cucumberbatch.north.system.process.UpdateProcess;
 import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWWindowSizeCallbackI;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -25,7 +24,7 @@ import static java.lang.Math.PI;
 
 @ComponentHandler(CameraControls.class)
 public class CameraControlsSystem extends AbstractSystem<CameraControls>
-        implements InitProcess<CameraControls>, InputHandlerProcess<CameraControls>, UpdateProcess<CameraControls> { //}, RenderProcess<CameraControls> {
+        implements InitProcess<CameraControls>, InputHandlerProcess<CameraControls>, UpdateProcess<CameraControls> {
 
     private static final float MAX_CAMERA_ANGLE = 89.986f;
 
@@ -108,11 +107,6 @@ public class CameraControlsSystem extends AbstractSystem<CameraControls>
         updateCameraProjection(window, graphics, deltaTime);
         updateCameraMovement(cameraControls, deltaTime);
     }
-
-//    @Override
-//    public void render(CameraControls cameraControls, OpenGLGraphics graphics) {
-//
-//    }
 
     private ProjectionState lastProjectionStateBeforeFocusLoss = ProjectionState.PERSPECTIVE_VIEW_STATE;
 
@@ -374,17 +368,4 @@ public class CameraControlsSystem extends AbstractSystem<CameraControls>
         return Math.min(Math.max(angle, lowest), highest);
     }
 
-    // TODO: Move this window callback into another place where it will fit, not the camera stuff
-    public static class WindowSizeCallback implements GLFWWindowSizeCallbackI {
-        private final Graphics graphics;
-
-        public WindowSizeCallback(Graphics graphics) {
-            this.graphics = graphics;
-        }
-
-        @Override
-        public void invoke(long window, int width, int height) {
-            graphics.updateViewport(0, 0, width, height);
-        }
-    }
 }

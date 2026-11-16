@@ -533,11 +533,7 @@ public class Pipeline implements Runnable {
             }
         }
 
-//        Stopwatch.stop("OpenGLGraphics systems handling ended!");
-
-//        Stopwatch.start();
         glfwSwapBuffers(window.getWindow());
-//        Stopwatch.stop("OpenGLGraphics buffer swap ended!");
     }
 
 

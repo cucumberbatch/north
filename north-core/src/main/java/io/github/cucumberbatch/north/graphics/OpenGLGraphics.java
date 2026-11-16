@@ -36,6 +36,13 @@ public class OpenGLGraphics extends AbstractGraphics {
     }
 
     @Override
+    public void updateViewport(int x, int y, int width, int height) {
+        window.setSize(width, height);
+        updateScreenProjection();
+        GL30.glViewport(x, y, width, height);
+    }
+    
+    @Override
     public long getWindow() {
         return window.getWindow();
     }

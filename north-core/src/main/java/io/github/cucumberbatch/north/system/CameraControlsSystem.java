@@ -4,7 +4,6 @@ import io.github.cucumberbatch.north.architecture.ApplicationContext;
 import io.github.cucumberbatch.north.architecture.ComponentHandler;
 import io.github.cucumberbatch.north.architecture.Inject;
 import io.github.cucumberbatch.north.graphics.Graphics;
-import io.github.cucumberbatch.north.graphics.OpenGLGraphics;
 import io.github.cucumberbatch.north.scene.component.Camera;
 import io.github.cucumberbatch.north.scene.component.CameraControls;
 import io.github.cucumberbatch.north.scene.component.Transform;
@@ -16,7 +15,6 @@ import io.github.cucumberbatch.north.system.process.UpdateProcess;
 import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWWindowSizeCallbackI;
-import org.lwjgl.opengl.GL30;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -33,7 +31,8 @@ public class CameraControlsSystem extends AbstractSystem<CameraControls>
 
     private static ProjectionState projectionState = ProjectionState.ORTHOGRAPHIC_TO_PERSPECTIVE_VIEW_STATE;
     private static Camera camera;
-    private final OpenGLGraphics graphics;
+    private final Graphics graphics;
+    private final Window window;
     private final boolean intermediateCameraStateOnFocusLossEnabled;
 
     //todo implement camera trace effect
@@ -74,7 +73,8 @@ public class CameraControlsSystem extends AbstractSystem<CameraControls>
     @Inject
     public CameraControlsSystem(ApplicationContext context) throws ReflectiveOperationException {
         super(CameraControls.class, context);
-        this.graphics = context.getDependency(OpenGLGraphics.class);
+        this.graphics = context.getDependency(Graphics.class);
+        this.window = context.getDependency(Window.class);
         this.intermediateCameraStateOnFocusLossEnabled =
                 ApplicationProperties.getBoolean("application.editor.camera.intermediate-state-on-focus-loss");
     }
@@ -105,7 +105,7 @@ public class CameraControlsSystem extends AbstractSystem<CameraControls>
     @Override
     public void update(CameraControls cameraControls, float deltaTime) {
         updateScreenCapture(graphics);
-        updateCameraProjection(graphics, deltaTime);
+        updateCameraProjection(window, graphics, deltaTime);
         updateCameraMovement(cameraControls, deltaTime);
     }
 
@@ -173,8 +173,8 @@ public class CameraControlsSystem extends AbstractSystem<CameraControls>
     private final double HALF_PI = PI / 2;
     private final double SIN_OF_HALF_PI = Math.sin(HALF_PI);
 
-    private void updateCameraProjection(OpenGLGraphics graphics, float deltaTime) {
-        updateViewportProjection(graphics);
+    private void updateCameraProjection(Window window, Graphics graphics, float deltaTime) {
+        updateViewportProjection(window, graphics);
 
         if (key1IsPressed) {
             switch (projectionState) {
@@ -239,11 +239,11 @@ public class CameraControlsSystem extends AbstractSystem<CameraControls>
      * {@code camera.projectionMatrix} to {@code graphics.projection} every frame, so this matrix
      * has to be refreshed as well after a resize/fullscreen transition.
      */
-    private void updateViewportProjection(OpenGLGraphics graphics) {
+    private void updateViewportProjection(Window window, Graphics graphics) {
         if (camera == null) return;
 
-        int width  = graphics.window.getWidth();
-        int height = graphics.window.getHeight();
+        int width  = window.getWidth();
+        int height = window.getHeight();
         if (width <= 0 || height <= 0) return;
 
         float aspect = (float) width / height;
@@ -304,8 +304,8 @@ public class CameraControlsSystem extends AbstractSystem<CameraControls>
         virtualCursorPosition    = new Vector2f(virtualCursorPosition).add(cursorPositionDifference);
         previousCursorPosition   = cursorPosition;
 
-        float verticalAngle   =  virtualCursorPosition.y / (graphics.window.getWidth() / 256f) - 180;
-        float horizontalAngle = -virtualCursorPosition.x / (graphics.window.getWidth() / 256f) - 180;
+        float verticalAngle   =  virtualCursorPosition.y / (window.getWidth() / 256f) - 180;
+        float horizontalAngle = -virtualCursorPosition.x / (window.getWidth() / 256f) - 180;
 
         verticalAngle = restrictAngle(verticalAngle, -MAX_CAMERA_ANGLE, MAX_CAMERA_ANGLE);
 
@@ -384,10 +384,7 @@ public class CameraControlsSystem extends AbstractSystem<CameraControls>
 
         @Override
         public void invoke(long window, int width, int height) {
-            Window.setSize(width, height);
-            graphics.updateScreenProjection();
-            GL30.glViewport(0, 0, width, height);
-            log.info("window size = {}w : {}h", width, height);
+            graphics.updateViewport(0, 0, width, height);
         }
     }
 }

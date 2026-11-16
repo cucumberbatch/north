@@ -22,6 +22,8 @@ public interface Graphics {
 
     void updateScreenProjection();
 
+    void updateViewport(int x, int y, int width, int height);
+
     long getWindow();
 
     int createShaderProgram(String vertexSource, String fragmentSource);

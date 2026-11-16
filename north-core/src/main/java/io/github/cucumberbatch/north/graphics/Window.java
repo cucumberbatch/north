@@ -30,7 +30,7 @@ public class Window {
     public int getWidth() { return width; }
     public int getHeight() { return height; }
 
-    public static void setSize(int newWidth, int newHeight) {
+    public void setSize(int newWidth, int newHeight) {
         width  = newWidth;
         height = newHeight;
     }

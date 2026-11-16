@@ -1,35 +1,38 @@
 package io.github.cucumberbatch.north.architecture;
 
+import java.util.IdentityHashMap;
+import java.util.Map;
+
 public class ApplicationContext {
-    private final DependencyRegisterer dependencyRegisterer;
+    private final Initializer initializer = new Initializer();
+    private final Map<Class<?>, Object> objects = new IdentityHashMap<>();
+    private final boolean silentRewrites = false;
 
     public ApplicationContext() {
-        this.dependencyRegisterer = new DependencyRegisterer();
-        this.dependencyRegisterer.registerDependency(ApplicationContext.class, this);
+        this.objects.put(Initializer.class, initializer);
+        this.objects.put(ApplicationContext.class, this);
     }
 
-    public <T> T getDependency(Class<T> dependencyClass) {
-        return getDependencyInternal(dependencyClass);
-    }
-
-    public <T> T addDependency(Class<T> dependencyClass) throws ReflectiveOperationException {
-        return dependencyRegisterer.registerDependency(dependencyClass);
-    }
-
-    public <T> T addDependency(Class<T> dependencyClass, T dependency) throws ReflectiveOperationException {
-        return dependencyRegisterer.registerDependency(dependencyClass, dependency);
-    }
-
-    public Object[] addDependencies(Class<?>[] classArray) throws ReflectiveOperationException {
-        return dependencyRegisterer.registerDependencies(classArray);
-    }
-
-    private <T> T getDependencyInternal(Class<T> dependencyClass) {
-        try {
-            return dependencyRegisterer.getDependency(dependencyClass);
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+    public <T> T getDependency(Class<T> aClass) {
+        T object = aClass.cast(objects.get(aClass));
+        if (object == null) {
+            object = addDependency(aClass);
         }
+        return object;
+    }
+
+    public <T> T addDependency(Class<T> aClass) {
+        T object = initializer.init(aClass, this);
+        objects.put(aClass, object);
+        return object;
+    }
+
+    public <T> T addDependency(Class<T> aClass, T value) {
+        if (objects.containsKey(aClass) && !silentRewrites) {
+            throw new IllegalStateException(String.format("An object of type '%' is already in context", aClass.getName()));
+        }
+        objects.put(aClass, value);
+        return value;
     }
 
 }

@@ -3,20 +3,21 @@ package io.github.cucumberbatch.north.reflection.di.registerer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import io.github.cucumberbatch.north.architecture.DependencyRegisterer;
+
+import io.github.cucumberbatch.north.architecture.ApplicationContext;
 import io.github.cucumberbatch.north.architecture.Inject;
 
-class DependencyRegistererTest {
+class ApplicationContextTest {
 
-    private DependencyRegisterer registerer;
+    private ApplicationContext context;
 
-    private <T> T reg(Class<T> aClass) throws ReflectiveOperationException {
-        return registerer.registerDependency(aClass);
+    private <T> T reg(Class<T> aClass) {
+        return context.addDependency(aClass);
     }
 
     @BeforeEach
     public void init() {
-        this.registerer = new DependencyRegisterer();
+        this.context = new ApplicationContext();
     }
 
     @Test
@@ -30,44 +31,6 @@ class DependencyRegistererTest {
         Assertions.assertNotNull(b);
         Assertions.assertNotNull(c);
         Assertions.assertNotNull(all);
-        Assertions.assertNotNull(a.b);
-        Assertions.assertNotNull(b.c);
-        Assertions.assertNotNull(all.a);
-        Assertions.assertNotNull(all.b);
-        Assertions.assertNotNull(all.c);
-        Assertions.assertSame(a.b, b);
-        Assertions.assertSame(b.c, c);
-        Assertions.assertSame(a.b.c, c);
-        Assertions.assertSame(all.a.b.c, c);
-    }
-
-    @Test
-    public void testDependencyInjection2() {
-        Class<?>[] classes = {All.class, A.class, C.class, B.class};
-        Object[] objects = Assertions.assertDoesNotThrow(() -> registerer.registerDependencies(classes));
-
-        Assertions.assertNotNull(objects);
-        Assertions.assertEquals(4, objects.length);
-
-        Object _all = objects[0];
-        Object _a = objects[1];
-        Object _c = objects[2];
-        Object _b = objects[3];
-
-        Assertions.assertNotNull(_a);
-        Assertions.assertNotNull(_b);
-        Assertions.assertNotNull(_c);
-        Assertions.assertNotNull(_all);
-        Assertions.assertInstanceOf(A.class, _a);
-        Assertions.assertInstanceOf(B.class, _b);
-        Assertions.assertInstanceOf(C.class, _c);
-        Assertions.assertInstanceOf(All.class, _all);
-
-        A a = (A) _a;
-        B b = (B) _b;
-        C c = (C) _c;
-        All all = (All) _all;
-
         Assertions.assertNotNull(a.b);
         Assertions.assertNotNull(b.c);
         Assertions.assertNotNull(all.a);

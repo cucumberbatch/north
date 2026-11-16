@@ -32,6 +32,7 @@ import io.github.cucumberbatch.north.utils.Stopwatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -85,21 +86,16 @@ public class Pipeline implements Runnable {
         this.smoothStopAndStartUpdateProcess =
                 ApplicationProperties.getBoolean("application.editor.process.update.smooth-stop-and-start");
 
-        try {
 //            context.addDependency(ComponentContainer.class, componentContainer);
-            this.assetService = context.addDependency(
-                    AssetService.class,
-                    new SimpleAssetService(graphics, context.getDependency(Audio.class))
-            );
-            this.componentContainer = context.getDependency(ComponentContainer.class);
-            cameraAwareService = context.getDependency(CameraAwareService.class);
-            this.entityManager = context.addDependency(
-                    EntityManager.class, new EntityManager(componentManager));
-            this.rootEntity = entityManager.getRoot();
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
-
+        this.assetService = context.addDependency(
+                AssetService.class,
+                new SimpleAssetService(graphics, context.getDependency(Audio.class))
+        );
+        this.componentContainer = context.getDependency(ComponentContainer.class);
+        cameraAwareService = context.getDependency(CameraAwareService.class);
+        this.entityManager = context.addDependency(
+                EntityManager.class, new EntityManager(componentManager));
+        this.rootEntity = entityManager.getRoot();
 
     }
 
@@ -259,7 +255,7 @@ public class Pipeline implements Runnable {
 
     @SuppressWarnings("unchecked")
     public void registerCollisions() {
-        systemManager.registerCollisions();
+        // systemManager.registerCollisions();
 
         /*
         if (systemManager.getProcessList(CollisionHandlingProcess.class).isEmpty()) return;
@@ -430,7 +426,9 @@ public class Pipeline implements Runnable {
             Iterator<? extends Component> iterator = system.getComponentIterator();
             while (iterator.hasNext()) {
                 Component component = iterator.next();
-                for (Collision collision : systemManager.collisions) {
+
+                // a temporary hack for unused and not implemented (yet) functionality
+                for (Collision collision : List.<Collision>of() /* systemManager.collisions */) {
                     // Logger.trace(String.format("Visiting enter collision [%s] for component [%s]", collision, component));
                     // Collision currently stores bounds. The entity comparison is kept as an
                     // identity check for the legacy collision-handler path.
@@ -456,7 +454,8 @@ public class Pipeline implements Runnable {
             Iterator<? extends Component> iterator = system.getComponentIterator();
             while (iterator.hasNext()) {
                 Component component = iterator.next();
-                for (Collision collision : systemManager.collisions) {
+                // and here also too
+                for (Collision collision : List.<Collision>of() /* systemManager.collisions */) {
                     // Logger.trace(String.format("Visiting hold collision [%s] for component [%s]", collision, component));
                     if ((Object) collision.getA() != component.getEntity() && (Object) collision.getB() != component.getEntity()) continue;
                     if (collision.inState(CollisionState.CONTINUED)) {
@@ -480,7 +479,8 @@ public class Pipeline implements Runnable {
             Iterator<? extends Component> iterator = system.getComponentIterator();
             while (iterator.hasNext()) {
                 Component component = iterator.next();
-                for (Collision collision : systemManager.collisions) {
+                // ..and here
+                for (Collision collision : List.<Collision>of() /* systemManager.collisions */) {
                     // Logger.trace(String.format("Visiting exit collision [%s] for component [%s]", collision, component));
                     if ((Object) collision.getA() != component.getEntity() && (Object) collision.getB() != component.getEntity()) continue;
                     if (collision.inState(CollisionState.EXITED)) {

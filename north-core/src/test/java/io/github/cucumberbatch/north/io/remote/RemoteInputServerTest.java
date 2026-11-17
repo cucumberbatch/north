@@ -1,4 +1,4 @@
-package io.github.cucumberbatch.north.system.remote;
+package io.github.cucumberbatch.north.io.remote;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import io.github.cucumberbatch.north.architecture.ApplicationContext;
 import io.github.cucumberbatch.north.graphics.Window;
-import io.github.cucumberbatch.north.system.Input;
+import io.github.cucumberbatch.north.io.Input;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

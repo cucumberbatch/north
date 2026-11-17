@@ -2,7 +2,6 @@ package io.github.cucumberbatch.north.graphics;
 
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
-import org.joml.Vector2f;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
@@ -11,7 +10,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
 import io.github.cucumberbatch.north.config.ApplicationProperties;
-import io.github.cucumberbatch.north.system.Input;
+import io.github.cucumberbatch.north.io.Input;
 import io.github.cucumberbatch.north.utils.Stopwatch;
 
 import java.nio.IntBuffer;

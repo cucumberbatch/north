@@ -4,6 +4,7 @@ import io.github.cucumberbatch.north.architecture.ApplicationContext;
 import io.github.cucumberbatch.north.architecture.ComponentHandler;
 import io.github.cucumberbatch.north.architecture.Inject;
 import io.github.cucumberbatch.north.graphics.Graphics;
+import io.github.cucumberbatch.north.io.Input;
 import io.github.cucumberbatch.north.scene.component.Camera;
 import io.github.cucumberbatch.north.scene.component.CameraControls;
 import io.github.cucumberbatch.north.scene.component.Transform;

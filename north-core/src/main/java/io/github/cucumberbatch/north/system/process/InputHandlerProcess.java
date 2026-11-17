@@ -1,7 +1,7 @@
 package io.github.cucumberbatch.north.system.process;
 
 import io.github.cucumberbatch.north.scene.component.Component;
-import io.github.cucumberbatch.north.system.Input;
+import io.github.cucumberbatch.north.io.Input;
 
 @FunctionalInterface
 public interface InputHandlerProcess<C extends Component> extends Process {

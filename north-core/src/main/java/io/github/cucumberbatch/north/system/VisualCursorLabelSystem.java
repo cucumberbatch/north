@@ -15,7 +15,7 @@ import io.github.cucumberbatch.north.scene.component.VisualCursor;
 import io.github.cucumberbatch.north.scene.component.VisualCursorLabel;
 import io.github.cucumberbatch.north.system.process.InitProcess;
 import io.github.cucumberbatch.north.system.process.UpdateProcess;
-import io.github.cucumberbatch.north.utils.BufferUtils;
+import io.github.cucumberbatch.north.memory.BufferUtils;
 
 import java.awt.Color;
 import java.awt.Font;

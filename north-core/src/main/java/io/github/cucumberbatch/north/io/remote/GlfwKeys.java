@@ -1,4 +1,4 @@
-package io.github.cucumberbatch.north.system.remote;
+package io.github.cucumberbatch.north.io.remote;
 
 import java.util.Collections;
 import java.util.HashMap;

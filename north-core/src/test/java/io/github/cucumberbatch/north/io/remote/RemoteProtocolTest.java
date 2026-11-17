@@ -1,4 +1,4 @@
-package io.github.cucumberbatch.north.system.remote;
+package io.github.cucumberbatch.north.io.remote;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

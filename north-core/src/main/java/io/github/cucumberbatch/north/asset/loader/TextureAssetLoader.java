@@ -3,7 +3,7 @@ package io.github.cucumberbatch.north.asset.loader;
 import io.github.cucumberbatch.north.asset.AssetService;
 import io.github.cucumberbatch.north.graphics.Graphics;
 import io.github.cucumberbatch.north.graphics.Texture;
-import io.github.cucumberbatch.north.utils.BufferUtils;
+import io.github.cucumberbatch.north.memory.BufferUtils;
 import io.github.cucumberbatch.north.io.ResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

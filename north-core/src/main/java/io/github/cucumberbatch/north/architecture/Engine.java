@@ -4,7 +4,7 @@ import io.github.cucumberbatch.north.audio.Audio;
 import io.github.cucumberbatch.north.graphics.Graphics;
 import io.github.cucumberbatch.north.graphics.OpenGLGraphics;
 import io.github.cucumberbatch.north.graphics.Window;
-import io.github.cucumberbatch.north.system.remote.RemoteInputServer;
+import io.github.cucumberbatch.north.io.remote.RemoteInputServer;
 
 /**
  * An entry point of all engine dependencies

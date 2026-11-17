@@ -1,4 +1,4 @@
-package io.github.cucumberbatch.north.system;
+package io.github.cucumberbatch.north.io;
 
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
@@ -18,7 +18,7 @@ import static org.lwjgl.glfw.GLFW.*;
  * Central input state of the engine.
  *
  * <p>The state is filled by the GLFW callbacks of the desktop window, but it is also open for
- * any other input source. The remote gamepad server ({@code io.github.cucumberbatch.north.system.remote})
+ * any other input source. The remote gamepad server ({@code io.github.cucumberbatch.north.io.remote})
  * injects its events through {@link #injectKeyPress(int)}, {@link #injectKeyRelease(int)} and
  * {@link #setAxis(String, float)}, so a phone connected over the local network is handled by the
  * very same code path as a physical keyboard.</p>

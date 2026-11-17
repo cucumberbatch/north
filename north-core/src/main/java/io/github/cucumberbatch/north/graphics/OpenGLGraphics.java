@@ -10,7 +10,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL32;
 import io.github.cucumberbatch.north.exception.ShaderUniformNotFoundException;
-import io.github.cucumberbatch.north.utils.BufferUtils;
+import io.github.cucumberbatch.north.memory.BufferUtils;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;

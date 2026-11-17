@@ -1,5 +1,6 @@
 package io.github.cucumberbatch.north.system;
 
+import io.github.cucumberbatch.north.io.Input;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;

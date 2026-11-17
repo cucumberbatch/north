@@ -1,8 +1,8 @@
-package io.github.cucumberbatch.north.system.remote;
+package io.github.cucumberbatch.north.io.remote;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import io.github.cucumberbatch.north.system.Input;
+import io.github.cucumberbatch.north.io.Input;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_A;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;

@@ -5,6 +5,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.github.cucumberbatch.north.memory.Vector3fPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,8 +41,10 @@ public class SystemManager {
     public SystemManager(ApplicationContext context) {
         this.context            = context;
         this.systemInitializer  = context.getDependency(Initializer.class);
-        this.scanner            = new ComponentHandlerScanner();
         this.componentContainer = context.getDependency(ComponentContainer.class);
+        this.scanner            = new ComponentHandlerScanner();
+
+        context.addDependency(Vector3fPool.class, new Vector3fPool(32));
 
         initProcessMap(ApplicationProperties.getProperty("process.package"));
         loadComponentSystemsFromPackage(ApplicationProperties.getProperty("system.package"));

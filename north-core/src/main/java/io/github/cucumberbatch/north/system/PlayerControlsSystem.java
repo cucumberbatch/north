@@ -1,5 +1,6 @@
 package io.github.cucumberbatch.north.system;
 
+import io.github.cucumberbatch.north.io.Input;
 import org.lwjgl.glfw.GLFW;
 import io.github.cucumberbatch.north.scene.component.PlayerControls;
 import io.github.cucumberbatch.north.scene.component.RigidBody;

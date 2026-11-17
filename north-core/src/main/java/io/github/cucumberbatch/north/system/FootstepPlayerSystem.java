@@ -3,6 +3,7 @@ package io.github.cucumberbatch.north.system;
 import java.util.Random;
 
 import io.github.cucumberbatch.north.graphics.Graphics;
+import io.github.cucumberbatch.north.io.Input;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import io.github.cucumberbatch.north.architecture.ApplicationContext;

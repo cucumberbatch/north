@@ -1,6 +1,6 @@
-package io.github.cucumberbatch.north.system.remote;
+package io.github.cucumberbatch.north.io.remote;
 
-import io.github.cucumberbatch.north.system.Input;
+import io.github.cucumberbatch.north.io.Input;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;

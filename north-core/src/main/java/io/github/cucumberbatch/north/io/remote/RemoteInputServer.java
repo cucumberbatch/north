@@ -1,9 +1,9 @@
-package io.github.cucumberbatch.north.system.remote;
+package io.github.cucumberbatch.north.io.remote;
 
 import io.github.cucumberbatch.north.architecture.ApplicationContext;
 import io.github.cucumberbatch.north.config.ApplicationProperties;
 import io.github.cucumberbatch.north.graphics.Window;
-import io.github.cucumberbatch.north.system.Input;
+import io.github.cucumberbatch.north.io.Input;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

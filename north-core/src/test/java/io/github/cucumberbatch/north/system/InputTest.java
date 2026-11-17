@@ -1,5 +1,6 @@
 package io.github.cucumberbatch.north.system;
 
+import io.github.cucumberbatch.north.io.Input;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

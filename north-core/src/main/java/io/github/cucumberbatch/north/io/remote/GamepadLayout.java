@@ -1,4 +1,4 @@
-package io.github.cucumberbatch.north.system.remote;
+package io.github.cucumberbatch.north.io.remote;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

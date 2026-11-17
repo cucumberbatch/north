@@ -1,5 +1,6 @@
 package io.github.cucumberbatch.north.system;
 
+import io.github.cucumberbatch.north.io.Input;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;

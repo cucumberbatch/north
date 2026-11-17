@@ -25,14 +25,13 @@ import io.github.cucumberbatch.north.scene.component.management.ComponentContain
 import io.github.cucumberbatch.north.scene.component.management.ComponentManager;
 import io.github.cucumberbatch.north.system.CameraAwareService;
 import io.github.cucumberbatch.north.system.CameraControlsSystem;
-import io.github.cucumberbatch.north.system.Input;
+import io.github.cucumberbatch.north.io.Input;
 import io.github.cucumberbatch.north.system.System;
 import io.github.cucumberbatch.north.system.process.*;
 import io.github.cucumberbatch.north.utils.Stopwatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -212,24 +211,29 @@ public class Pipeline implements Runnable {
         input.updateInput();
 
         if (input.isHeld(GLFW.GLFW_KEY_P)) {
-            if (updateFlowState.equals(RUNNING)) {
-                if (smoothStopAndStartUpdateProcess) {
-                    updateFlowState = RUN_TO_STOP;
-                } else {
-                    updateFlowState = STOPPED;
-                    runFactor = 0;
-                }
-            } else if (updateFlowState.equals(STOPPED)) {
-                if (smoothStopAndStartUpdateProcess) {
+            switch (updateFlowState) {
+                case RUNNING:
+                    if (smoothStopAndStartUpdateProcess) {
+                        updateFlowState = RUN_TO_STOP;
+                    } else {
+                        updateFlowState = STOPPED;
+                        runFactor = 0;
+                    }
+                    break;
+                case STOPPED:
+                    if (smoothStopAndStartUpdateProcess) {
+                        updateFlowState = STOP_TO_RUN;
+                    } else {
+                        updateFlowState = RUNNING;
+                        runFactor = 1;
+                    }
+                    break;
+                case RUN_TO_STOP:
                     updateFlowState = STOP_TO_RUN;
-                } else {
-                    updateFlowState = RUNNING;
-                    runFactor = 1;
-                }
-            } else if (updateFlowState.equals(RUN_TO_STOP)) {
-                updateFlowState = STOP_TO_RUN;
-            } else {
-                updateFlowState = RUN_TO_STOP;
+                    break;
+                default:
+                    updateFlowState = RUN_TO_STOP;
+                    break;
             }
             input.clearKeyHold(GLFW.GLFW_KEY_P);
         }

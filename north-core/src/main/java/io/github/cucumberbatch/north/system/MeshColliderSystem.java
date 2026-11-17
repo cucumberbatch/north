@@ -36,7 +36,7 @@ public class MeshColliderSystem extends AbstractSystem<MeshCollider>
     @Inject
     public MeshColliderSystem(ApplicationContext context) {
         super(MeshCollider.class, context);
-        this.spatialIndex = context.getDependency(SceneSpatialIndex.class);
+        this.spatialIndex = context.resolve(SceneSpatialIndex.class);
     }
 
     @Override

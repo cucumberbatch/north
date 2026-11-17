@@ -17,8 +17,8 @@ public class ComponentManager {
 
     @Inject
     public ComponentManager(ApplicationContext context) {     
-        this.container      = context.addDependency(ComponentContainer.class, new MapBasedComponentContainer());
-        this.commandApplier = context.getDependency(CommandApplier.class);
+        this.container      = context.register(ComponentContainer.class, new MapBasedComponentContainer());
+        this.commandApplier = context.resolve(CommandApplier.class);
     }
 
     public <C extends Component> C add(Entity entity, C component) {

@@ -75,8 +75,8 @@ public class CameraControlsSystem extends AbstractSystem<CameraControls>
     @Inject
     public CameraControlsSystem(ApplicationContext context) throws ReflectiveOperationException {
         super(CameraControls.class, context);
-        this.graphics = context.getDependency(Graphics.class);
-        this.display = context.getDependency(Display.class);
+        this.graphics = context.resolve(Graphics.class);
+        this.display = context.resolve(Display.class);
         this.intermediateCameraStateOnFocusLossEnabled =
                 ApplicationProperties.getBoolean("application.editor.camera.intermediate-state-on-focus-loss");
     }

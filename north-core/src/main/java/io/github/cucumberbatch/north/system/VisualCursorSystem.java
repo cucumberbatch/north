@@ -73,10 +73,10 @@ public class VisualCursorSystem extends AbstractSystem<VisualCursor>
     @Inject
     public VisualCursorSystem(ApplicationContext context) {
         super(VisualCursor.class, context);
-        this.input        = context.getDependency(Input.class);
-        this.display      = context.getDependency(Display.class);
-        this.graphics     = context.getDependency(Graphics.class);
-        this.spatialIndex = context.getDependency(SceneSpatialIndex.class);
+        this.input        = context.resolve(Input.class);
+        this.display      = context.resolve(Display.class);
+        this.graphics     = context.resolve(Graphics.class);
+        this.spatialIndex = context.resolve(SceneSpatialIndex.class);
     }
 
     @Override

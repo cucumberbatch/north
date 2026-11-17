@@ -19,8 +19,8 @@ class SystemManagerTest {
     @Test
     void initializesProcessQueuesForEveryProcessType() {
         ApplicationContext context = new ApplicationContext();
-        context.getDependency(ComponentManager.class);
-        SystemManager systemManager = context.getDependency(SystemManager.class);
+        context.resolve(ComponentManager.class);
+        SystemManager systemManager = context.resolve(SystemManager.class);
 
         assertNotNull(systemManager);
         assertNotNull(systemManager.getProcessList(InitProcess.class));
@@ -34,8 +34,8 @@ class SystemManagerTest {
     @Test
     void doesNotInstantiateSystemsForComponentsWithoutHandler() {
         ApplicationContext context = new ApplicationContext();
-        context.getDependency(ComponentManager.class);
-        SystemManager systemManager = context.getDependency(SystemManager.class);
+        context.resolve(ComponentManager.class);
+        SystemManager systemManager = context.resolve(SystemManager.class);
 
         assertNull(systemManager.getSystemByComponentType(Transform.class));
     }

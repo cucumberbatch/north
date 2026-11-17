@@ -47,8 +47,8 @@ public class FootstepPlayerSystem extends AbstractSystem<FootstepPlayer>
     @Inject
     public FootstepPlayerSystem(ApplicationContext context) {
         super(FootstepPlayer.class, context);
-        audio = context.getDependency(Audio.class);
-        graphics = context.getDependency(Graphics.class);
+        audio = context.resolve(Audio.class);
+        graphics = context.resolve(Graphics.class);
         random = new Random();
     }
 

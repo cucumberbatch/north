@@ -36,26 +36,26 @@ public class Engine {
         context = new ApplicationContext();
 
         window = new Window();
-        context.addDependency(Window.class, window);
-        context.addDependency(Display.class, window);
+        context.register(Window.class, window);
+        context.register(Display.class, window);
 
         graphics = new OpenGLGraphics(window);
-        context.addDependency(Graphics.class, graphics);
+        context.register(Graphics.class, graphics);
 
         audio = new Audio();
-        context.addDependency(Audio.class, audio);
+        context.register(Audio.class, audio);
 
         assetService = new SimpleAssetService();
         OpenGLAssetLoaders.registerLoaders(assetService, graphics);
         ResourceLoader resourceLoader = new LocalResourceLoader();
         assetService.registerAssetLoader(AudioClip.class, new AudioAssetLoader(resourceLoader, audio));
-        context.addDependency(AssetService.class, assetService);
+        context.register(AssetService.class, assetService);
 
         pipeline = new Pipeline(context);
-        context.addDependency(Pipeline.class, pipeline);
+        context.register(Pipeline.class, pipeline);
 
         remoteInputServer = new RemoteInputServer(context);
-        context.addDependency(RemoteInputServer.class, remoteInputServer);
+        context.register(RemoteInputServer.class, remoteInputServer);
 
     }
 

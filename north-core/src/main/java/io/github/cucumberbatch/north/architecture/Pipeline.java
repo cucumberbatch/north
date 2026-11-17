@@ -4,7 +4,6 @@ import io.github.cucumberbatch.north.graphics.Display;
 import io.github.cucumberbatch.north.graphics.Graphics;
 import org.lwjgl.glfw.GLFW;
 import io.github.cucumberbatch.north.asset.AssetService;
-import io.github.cucumberbatch.north.audio.Audio;
 import io.github.cucumberbatch.north.config.ApplicationProperties;
 import io.github.cucumberbatch.north.exception.ComponentNotFoundException;
 import io.github.cucumberbatch.north.graphics.shader.ShaderUniformNotFoundException;
@@ -65,13 +64,14 @@ public class Pipeline implements Runnable {
     private final ComponentContainer componentContainer;
 
     public Pipeline(ApplicationContext context) {
-        this.display = context.getDependency(Display.class);
-        this.graphics = context.getDependency(Graphics.class);
-        this.componentManager = context.getDependency(ComponentManager.class);
-        this.systemManager = context.getDependency(SystemManager.class);
-        this.commandApplier = context.getDependency(CommandApplier.class);
-        this.timingContext = new FrameSync(65);
-        this.input = context.getDependency(Input.class);
+        this.display          = context.resolve(Display.class);
+        this.graphics         = context.resolve(Graphics.class);
+        this.componentManager = context.resolve(ComponentManager.class);
+        this.systemManager    = context.resolve(SystemManager.class);
+        this.commandApplier   = context.resolve(CommandApplier.class);
+        this.input            = context.resolve(Input.class);
+
+        this.timingContext    = new FrameSync(65);
 
 //        this.componentContainer = new MapBasedComponentContainer();
 
@@ -82,13 +82,12 @@ public class Pipeline implements Runnable {
                 ApplicationProperties.getBoolean("application.editor.process.update.smooth-stop-and-start");
 
 //            context.addDependency(ComponentContainer.class, componentContainer);
-        this.assetService = context.getDependency(AssetService.class);
-        this.componentContainer = context.getDependency(ComponentContainer.class);
-        cameraAwareService = context.getDependency(CameraAwareService.class);
-        this.entityManager = context.addDependency(
-                EntityManager.class, new EntityManager(componentManager));
-        this.rootEntity = entityManager.getRoot();
+        this.assetService       = context.resolve(AssetService.class);
+        this.componentContainer = context.resolve(ComponentContainer.class);
+        this.cameraAwareService = context.resolve(CameraAwareService.class);
+        this.entityManager      = context.register(EntityManager.class, new EntityManager(componentManager));
 
+        this.rootEntity = entityManager.getRoot();
     }
 
     @Override

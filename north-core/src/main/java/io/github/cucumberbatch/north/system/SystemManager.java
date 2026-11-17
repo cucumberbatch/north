@@ -40,11 +40,11 @@ public class SystemManager {
     @Inject
     public SystemManager(ApplicationContext context) {
         this.context            = context;
-        this.systemInitializer  = context.getDependency(Initializer.class);
-        this.componentContainer = context.getDependency(ComponentContainer.class);
+        this.systemInitializer  = context.resolve(Initializer.class);
+        this.componentContainer = context.resolve(ComponentContainer.class);
         this.scanner            = new ComponentHandlerScanner();
 
-        context.addDependency(Vector3fPool.class, new Vector3fPool(32));
+        context.register(Vector3fPool.class, new Vector3fPool(32));
 
         initProcessMap(ApplicationProperties.getProperty("process.package"));
         loadComponentSystemsFromPackage(ApplicationProperties.getProperty("system.package"));

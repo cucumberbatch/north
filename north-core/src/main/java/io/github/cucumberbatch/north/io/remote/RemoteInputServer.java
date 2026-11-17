@@ -114,8 +114,8 @@ public class RemoteInputServer {
     private Thread acceptThread;
 
     public RemoteInputServer(ApplicationContext context) {
-        this.input = context.getDependency(Input.class);
-        this.display = context.getDependency(Display.class);
+        this.input = context.resolve(Input.class);
+        this.display = context.resolve(Display.class);
         this.layout = GamepadLayout.load();
         this.bus = new RemoteInputBus(input);
 

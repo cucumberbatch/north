@@ -30,11 +30,11 @@ public abstract class AbstractSystem<C extends Component> implements System<C> {
 
     public AbstractSystem(Class<C> componentType, ApplicationContext context) {
         this.componentType = componentType;
-        this.cm            = context.getDependency(ComponentManager.class);
-        this.assetService  = context.getDependency(AssetService.class);
-        this.entityManager = context.getDependency(EntityManager.class);
+        this.cm            = context.resolve(ComponentManager.class);
+        this.assetService  = context.resolve(AssetService.class);
+        this.entityManager = context.resolve(EntityManager.class);
         this.sceneRoot     = entityManager.getRoot();
-        this.vector3fPool  = context.getDependency(Vector3fPool.class);
+        this.vector3fPool  = context.resolve(Vector3fPool.class);
     }
 
     @Override

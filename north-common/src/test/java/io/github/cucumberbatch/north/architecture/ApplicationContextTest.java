@@ -10,7 +10,7 @@ class ApplicationContextTest {
     private ApplicationContext context;
 
     private <T> T reg(Class<T> aClass) {
-        return context.addDependency(aClass);
+        return context.register(aClass);
     }
 
     @BeforeEach
@@ -26,6 +26,11 @@ class ApplicationContextTest {
     @Test
     public void testNoArgsInjectConstructor() {
         assertNotNull(assertDoesNotThrow(() -> reg(NoArgsInjectConstructorClass.class)));
+    }
+
+    @Test
+    public void testRecursiveDependencyResolution() {
+        assertNotNull(assertDoesNotThrow(() -> context.resolve(All.class)));
     }
 
     @Test

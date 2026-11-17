@@ -42,9 +42,9 @@ class RemoteInputServerTest {
 
         ApplicationContext context = new ApplicationContext();
         Window window = new Window("test", 800, 600, false);
-        context.addDependency(Display.class, window);
+        context.register(Display.class, window);
 
-        input = context.getDependency(Input.class);
+        input = context.resolve(Input.class);
         server = new RemoteInputServer(context);
         server.start();
 

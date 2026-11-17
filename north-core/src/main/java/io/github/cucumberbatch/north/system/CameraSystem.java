@@ -26,9 +26,9 @@ public class CameraSystem extends AbstractSystem<Camera>
     @Inject
     public CameraSystem(ApplicationContext context) {
         super(Camera.class, context);
-        cameraAwareService = context.getDependency(CameraAwareService.class);
-        graphics = context.getDependency(Graphics.class);
-        display = context.getDependency(Display.class);
+        cameraAwareService = context.resolve(CameraAwareService.class);
+        graphics = context.resolve(Graphics.class);
+        display = context.resolve(Display.class);
     }
 
     @Override

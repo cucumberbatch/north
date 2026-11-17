@@ -9,14 +9,12 @@ import java.util.Objects;
 public class Initializer {
 
     @SuppressWarnings("unchecked")
-    public <T> T init(Class<? extends T> clazz, ApplicationContext context) {
-        Objects.requireNonNull(clazz,   "clazz");
+    public <T> T init(Class<? extends T> type, ApplicationContext context) {
+        Objects.requireNonNull(type,    "type");
         Objects.requireNonNull(context, "context");
 
-        T object = null;
-        
         Collection<Object> dependencies = new ArrayList<>();
-        Constructor<T>[] declaredConstructors = (Constructor<T>[]) clazz.getDeclaredConstructors();
+        Constructor<T>[] declaredConstructors = (Constructor<T>[]) type.getDeclaredConstructors();
         Constructor<T> foundConstructor = null;
 
         try {
@@ -34,7 +32,7 @@ public class Initializer {
                     Parameter[] constructorParameters = constructor.getParameters();
                     for (Parameter parameter : constructorParameters) {
                         Class<?> parameterType = parameter.getType();
-                        Object dependency = context.getDependency(parameterType);
+                        Object dependency = context.resolve(parameterType);
                         if (dependency == null) {
                             dependencies.clear();
                             break;
@@ -47,14 +45,12 @@ public class Initializer {
             }
 
             if (foundConstructor != null) {
-                object = foundConstructor.newInstance(dependencies.toArray());
+                return foundConstructor.newInstance(dependencies.toArray());
             } else {
-                throw new RuntimeException("Inject annotation not found for a class '" + clazz.getName() + "'");
+                throw new RuntimeException("Inject annotation not found for '" + type.getName() + "'");
             }
-
-            return object;
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException("Initialization of '" + clazz.getName() + "' failed", e);
+            throw new RuntimeException("Initialization failed for '" + type.getName() + "'", e);
         }
     }
 }

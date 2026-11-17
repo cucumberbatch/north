@@ -18,7 +18,7 @@ class EntityManagerTest {
     @BeforeEach
     void setUp() {
         ApplicationContext context = new ApplicationContext();
-        ComponentManager componentManager = context.getDependency(ComponentManager.class);
+        ComponentManager componentManager = context.resolve(ComponentManager.class);
         entityManager = new EntityManager(componentManager);
     }
 

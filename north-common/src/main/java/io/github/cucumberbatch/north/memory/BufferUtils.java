@@ -17,13 +17,8 @@ public class BufferUtils {
 
     private static final float[] M4F_BUFFER_ARRAY = new float[16];
 
-    private static final boolean newMemoryAllocation = true;
-
     public static ByteBuffer createByteBuffer(int size) {
-        if (newMemoryAllocation) {
-            return org.lwjgl.BufferUtils.createByteBuffer(size);
-        }
-        return ByteBuffer.allocateDirect(size);
+        return ByteBuffer.allocateDirect(size).order(ByteOrder.nativeOrder());
     }
 
     public static ByteBuffer createByteBuffer(byte[] array) {
@@ -33,14 +28,10 @@ public class BufferUtils {
             return buffer;
         }
 
-        if (newMemoryAllocation) {
-            buffer = org.lwjgl.BufferUtils.createByteBuffer(array.length);
-        } else {
-            buffer = ByteBuffer.allocateDirect(array.length);
-        }
+        buffer = ByteBuffer.allocateDirect(array.length).order(ByteOrder.nativeOrder());
 
         //log.info(String.format("ByteBuffer of size %d created", buffer.capacity()));
-        buffer.order(ByteOrder.nativeOrder()).put(array).flip();
+        buffer.put(array).flip();
         BYTE_BUFFER_STORAGE.put(array.length, buffer);
         return buffer;
     }
@@ -78,11 +69,7 @@ public class BufferUtils {
             return matrix4f.get(buffer);
         }
 
-        if (newMemoryAllocation) {
-            buffer = org.lwjgl.BufferUtils.createFloatBuffer(16);
-        } else {
-            buffer = ByteBuffer.allocateDirect(16 << 2).order(ByteOrder.nativeOrder()).asFloatBuffer();
-        }
+        buffer = ByteBuffer.allocateDirect(16 << 2).order(ByteOrder.nativeOrder()).asFloatBuffer();
 
         //log.info(String.format("FloatBuffer of size %d created", buffer.capacity()));
         matrix4f.get(buffer);

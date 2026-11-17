@@ -24,7 +24,7 @@
     <dependencies>
         <dependency>
             <groupId>io.github.cucumberbatch.north</groupId>
-            <artifactId>north-structures</artifactId>
+            <artifactId>north-common</artifactId>
             <version>${revision}</version>
         </dependency>
 

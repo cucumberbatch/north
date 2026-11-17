@@ -111,6 +111,18 @@ public class SystemManager {
         return (C) component;
    }
 
+    /**
+     * Removes a component from the container without requiring a registered system for its type.
+     */
+    @SuppressWarnings("unchecked")
+    public void removeComponent(Component component) {
+        if (component == null) {
+            return;
+        }
+        component.setActive(false);
+        componentContainer.remove(component.getEntity(), (Class<Component>) component.getClass());
+    }
+
     public void reset() {
         systems.forEach(System::reset);
     }

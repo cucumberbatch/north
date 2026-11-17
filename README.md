@@ -31,30 +31,27 @@ features are added incrementally.
 
 - JDK 11 or newer
 - A GPU/driver with OpenGL 3.2 support
-- Gradle wrapper (bundled), or Maven 3.8+
+- Maven 3.8+
 
 ## Build and run
 
-Gradle is the primary build:
+Maven is the build tool:
 
 ```bash
-./gradlew :core:run
-# Windows
-gradlew.bat :core:run
+mvn -pl north-core -am package
+java -jar north-core/target/north-core-0.0.1.jar
 ```
 
-Build a runnable distribution:
+Build every module:
 
 ```bash
-./gradlew :core:installDist
-# -> core/build/install/core/bin/core
+mvn package
 ```
 
-Maven is still supported:
+Run the tests:
 
 ```bash
-mvn -pl core -am package
-java -jar core/target/core-0.0.1-SNAPSHOT.jar
+mvn test
 ```
 
 The scene that starts is selected by `application.scene` in `north.properties`.
@@ -62,22 +59,27 @@ The scene that starts is selected by `application.scene` in `north.properties`.
 ## Project layout
 
 ```
-core/src/main/java/org/north/core/
-├── architecture/   Engine, Pipeline (main loop), DI context, MainThread
+north-common/src/main/java/io/github/cucumberbatch/north/
+├── architecture/   DI container (ApplicationContext, Initializer, Inject), FrameSync
+├── config/         ApplicationProperties
+├── io/             classpath resource loading
+├── memory/         pooling and buffer helpers
+└── utils/          small helpers (timing)
+
+north-core/src/main/java/io/github/cucumberbatch/north/
+├── architecture/   Engine, Pipeline (main loop), component-handler scanning
 ├── scene/          Entity, EntityManager, components, scene composers, deferred commands
-├── system/         systems, process interfaces, remote/ web gamepad server
+├── system/         systems and process interfaces
 ├── graphics/       window, shaders, meshes, materials, textures, predefined meshes
 ├── asset/          AssetService and asset loaders
 ├── audio/          OpenAL wrapper: Audio, AudioClip, AudioSource
 ├── physics/        collisions, shapes, octree spatial index
-├── io/             classpath resource loading
-├── config/         ApplicationProperties
-└── utils/          small helpers (pooling, buffers, timing)
+└── io/             Input and the remote web-gamepad server
 ```
 
 Main class: `io.github.cucumberbatch.north.architecture.Application`.
 
-Assets live in `core/src/main/resources/assets/` and are loaded by classpath path.
+Assets live in `north-core/src/main/resources/assets/` and are loaded by classpath path.
 
 ## How a frame works
 
@@ -129,7 +131,7 @@ tree. `EntityManager` keeps a flat list and supports `create`, `add`, `remove`, 
 
 A component extends `AbstractComponent`. A system handles exactly one component type, is
 annotated with `@ComponentHandler`, and must live in the scanned package
-(`system.package`, default `org/north/core/system`).
+(`system.package`, default `io/github/cucumberbatch/north/system`).
 
 ```java
 public class Spinner extends AbstractComponent {
@@ -263,13 +265,13 @@ there and select them with `application.scene`.
 ## Configuration
 
 All engine settings are read from
-[`core/src/main/resources/north.properties`](core/src/main/resources/north.properties).
+[`north-core/src/main/resources/north.properties`](north-core/src/main/resources/north.properties).
 Change a value and rebuild the project. When launching the engine JVM directly, remote-input
 properties can additionally be overridden with a `-Dnorth.<property>=value` system property,
 for example:
 
 ```bash
-java -Dnorth.application.remote-input.port=9090 -jar core/target/core-0.0.1-SNAPSHOT.jar
+java -Dnorth.application.remote-input.port=9090 -jar north-core/target/north-core-0.0.1.jar
 ```
 
 | Property | Default | Description |
@@ -287,8 +289,8 @@ java -Dnorth.application.remote-input.port=9090 -jar core/target/core-0.0.1-SNAP
 | `application.remote-input.bind` | `0.0.0.0` | Bind address of the server |
 | `application.remote-input.auto-open-browser` | `false` | Open the gamepad URL in the default browser on start |
 | `application.remote-input.cursor-speed` | `1.0` | Cursor speed multiplier for the gamepad |
-| `system.package` | `org/north/core/system` | Package scanned for `@ComponentHandler` systems |
-| `process.package` | `org/north/core/system/process` | Package scanned for process interfaces |
+| `system.package` | `io/github/cucumberbatch/north/system` | Package scanned for `@ComponentHandler` systems |
+| `process.package` | `io/github/cucumberbatch/north/system/process` | Package scanned for process interfaces |
 
 `project.*`, `scene.storage.*` and `logger.severity` are reserved for future use.
 
@@ -304,7 +306,7 @@ http://<local-network-address>:8080/
 Every button and stick is delivered into the engine `Input`, so the game reacts to the phone
 exactly like it reacts to a physical keyboard (the footsteps scene is a good demo).
 
-Bindings live in `core/src/main/resources/remote/gamepad.properties`. To change them without
+Bindings live in `north-core/src/main/resources/remote/gamepad.properties`. To change them without
 rebuilding, put a `remote-gamepad.properties` file into the working directory or point the
 `north.remote.gamepad.bindings` system property to a custom file. Key names are GLFW names
 (`SPACE`, `ESCAPE`, `W`, `LEFT_SHIFT`, `UP`, ...).

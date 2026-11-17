@@ -21,6 +21,18 @@
             <groupId>io.github.cucumberbatch.north</groupId>
             <artifactId>north-common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.github.cucumberbatch.north</groupId>
+            <artifactId>north-asset</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.cucumberbatch.north</groupId>
+            <artifactId>north-graphics-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.cucumberbatch.north</groupId>
+            <artifactId>north-graphics-desktop</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.lwjgl</groupId>
@@ -72,15 +84,18 @@
             <artifactId>lwjgl-stb</artifactId>
             <classifier>${lwjgl.natives}</classifier>
         </dependency>
+
         <dependency>
             <groupId>org.joml</groupId>
             <artifactId>joml</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>

@@ -2,7 +2,6 @@ package io.github.cucumberbatch.north.system;
 
 import io.github.cucumberbatch.north.graphics.Graphics;
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL11;
 import io.github.cucumberbatch.north.architecture.ApplicationContext;
 import io.github.cucumberbatch.north.architecture.ComponentHandler;
 import io.github.cucumberbatch.north.architecture.Inject;
@@ -37,12 +36,12 @@ public class MeshRendererSystem
 
         if (meshRenderer.screenSpace) {
             graphics.updateScreenProjection();
-            GL11.glDisable(GL11.GL_DEPTH_TEST);
+            graphics.setDepthTestEnabled(false);
             try {
                 material.apply(graphics, modelMatrix, graphics.screenProjection(), graphics.screenView());
                 graphics.drawIndexed(mesh.vao(), mesh.indexCount());
             } finally {
-                GL11.glEnable(GL11.GL_DEPTH_TEST);
+                graphics.setDepthTestEnabled(true);
             }
             return;
         }

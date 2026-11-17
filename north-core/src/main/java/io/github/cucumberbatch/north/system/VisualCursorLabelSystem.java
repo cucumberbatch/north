@@ -2,7 +2,6 @@ package io.github.cucumberbatch.north.system;
 
 import io.github.cucumberbatch.north.graphics.*;
 import org.joml.Vector4f;
-import org.lwjgl.opengl.GL11;
 import io.github.cucumberbatch.north.architecture.ApplicationContext;
 import io.github.cucumberbatch.north.architecture.ComponentHandler;
 import io.github.cucumberbatch.north.architecture.Inject;
@@ -43,14 +42,14 @@ public class VisualCursorLabelSystem extends AbstractSystem<VisualCursorLabel>
     private static final int MAX_TEXT_WIDTH = 260;
 
     private final Graphics graphics;
-    private final Window window;
+    private final Display display;
     private final Font font = new Font("SansSerif", Font.BOLD, 15);
 
     @Inject
     public VisualCursorLabelSystem(ApplicationContext context) {
         super(VisualCursorLabel.class, context);
         this.graphics = context.getDependency(Graphics.class);
-        this.window = context.getDependency(Window.class);
+        this.display = context.getDependency(Display.class);
     }
 
     @Override
@@ -169,7 +168,7 @@ public class VisualCursorLabelSystem extends AbstractSystem<VisualCursorLabel>
         image.getRGB(0, 0, width, height, pixels, 0, width);
 
         IntBuffer imageBuffer = BufferUtils.createIntBuffer(pixels);
-        int id = graphics.createTexture(width, height, imageBuffer, GL11.GL_LINEAR, GL11.GL_LINEAR);
+        int id = graphics.createTexture(width, height, imageBuffer, TextureFilter.LINEAR, TextureFilter.LINEAR);
 
         return new Texture(id, width, height);
     }
@@ -177,7 +176,7 @@ public class VisualCursorLabelSystem extends AbstractSystem<VisualCursorLabel>
     private Texture createTransparentTexture() {
         int[] pixel = new int[]{0x00000000};
         IntBuffer buffer = BufferUtils.createIntBuffer(pixel);
-        int id = graphics.createTexture(1, 1, buffer, GL11.GL_LINEAR, GL11.GL_LINEAR);
+        int id = graphics.createTexture(1, 1, buffer, TextureFilter.LINEAR, TextureFilter.LINEAR);
         return new Texture(id, 1, 1);
     }
 
@@ -206,8 +205,8 @@ public class VisualCursorLabelSystem extends AbstractSystem<VisualCursorLabel>
         float halfWidth = labelWidth / 2f;
         float halfHeight = labelHeight / 2f;
 
-        float screenWidth = window.width();
-        float screenHeight = window.height();
+        float screenWidth = display.width();
+        float screenHeight = display.height();
         float margin = label.screenMargin;
 
         float cursorHalfWidth = Math.max(1f, cursor.displaySize.x) / 2f;

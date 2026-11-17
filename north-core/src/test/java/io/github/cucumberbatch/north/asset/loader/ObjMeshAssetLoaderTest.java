@@ -3,6 +3,7 @@ package io.github.cucumberbatch.north.asset.loader;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import io.github.cucumberbatch.north.graphics.Mesh;
+import io.github.cucumberbatch.north.graphics.opengl.loader.ObjMeshAssetLoader;
 import io.github.cucumberbatch.north.io.ResourceLoader;
 import io.github.cucumberbatch.north.physics.spatial.Aabb;
 

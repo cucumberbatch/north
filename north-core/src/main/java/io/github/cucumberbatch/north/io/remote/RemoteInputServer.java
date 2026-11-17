@@ -2,8 +2,9 @@ package io.github.cucumberbatch.north.io.remote;
 
 import io.github.cucumberbatch.north.architecture.ApplicationContext;
 import io.github.cucumberbatch.north.config.ApplicationProperties;
-import io.github.cucumberbatch.north.graphics.Window;
+import io.github.cucumberbatch.north.graphics.Display;
 import io.github.cucumberbatch.north.io.Input;
+import io.github.cucumberbatch.north.io.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,7 +91,7 @@ public class RemoteInputServer {
     private static final int OPCODE_PONG = 0xA;
 
     private final Input input;
-    private final Window window;
+    private final Display display;
     private final GamepadLayout layout;
     private final RemoteInputBus bus;
 
@@ -114,7 +115,7 @@ public class RemoteInputServer {
 
     public RemoteInputServer(ApplicationContext context) {
         this.input = context.getDependency(Input.class);
-        this.window = context.getDependency(Window.class);
+        this.display = context.getDependency(Display.class);
         this.layout = GamepadLayout.load();
         this.bus = new RemoteInputBus(input);
 
@@ -623,7 +624,7 @@ public class RemoteInputServer {
 
             synchronized (this) {
                 if (state == null) {
-                    GamepadState created = new GamepadState(id, layout, bus, window);
+                    GamepadState created = new GamepadState(id, layout, bus, display);
                     GamepadState existing = clients.putIfAbsent(id, created);
                     state = existing != null ? existing : created;
                 }

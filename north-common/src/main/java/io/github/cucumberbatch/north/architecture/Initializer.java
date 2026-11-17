@@ -4,52 +4,57 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 public class Initializer {
 
     @SuppressWarnings("unchecked")
     public <T> T init(Class<? extends T> clazz, ApplicationContext context) {
+        Objects.requireNonNull(clazz,   "clazz");
+        Objects.requireNonNull(context, "context");
+
         T object = null;
         
-        Collection<Object> initializedParams = new ArrayList<>();
+        Collection<Object> dependencies = new ArrayList<>();
         Constructor<T>[] declaredConstructors = (Constructor<T>[]) clazz.getDeclaredConstructors();
-        Constructor<T> noArgsConstructor = null;
+        Constructor<T> foundConstructor = null;
 
         try {
-            for (Constructor<T> constructor: declaredConstructors) {
+            for (Constructor<T> constructor : declaredConstructors) {
+                // firstly, we check for no args constructor
                 if (constructor.getParameterCount() == 0) {
                     constructor.setAccessible(true);
-                    noArgsConstructor = constructor;
+                    foundConstructor = constructor;
                     continue;
                 }
+
+                // only then if there is no such, we search for a specific Inject-marked one
                 constructor.setAccessible(true);
                 if (constructor.isAnnotationPresent(Inject.class)) {
                     Parameter[] constructorParameters = constructor.getParameters();
                     for (Parameter parameter : constructorParameters) {
                         Class<?> parameterType = parameter.getType();
-                        Object foundParam = context.getDependency(parameterType);
-                        if (foundParam == null) {
-                            initializedParams.clear();
+                        Object dependency = context.getDependency(parameterType);
+                        if (dependency == null) {
+                            dependencies.clear();
                             break;
                         }
-                        initializedParams.add(foundParam);
+                        dependencies.add(dependency);
                     }
-                    object = constructor.newInstance(initializedParams.toArray());
+                    foundConstructor = constructor;
                     break;
                 }
             }
 
-            if (object == null) {
-                if (noArgsConstructor != null) {
-                    object = noArgsConstructor.newInstance();
-                } else {
-                    throw new RuntimeException(String.format("Inject annotation not found for a class '%s'", clazz.getName()));
-                }
+            if (foundConstructor != null) {
+                object = foundConstructor.newInstance(dependencies.toArray());
+            } else {
+                throw new RuntimeException("Inject annotation not found for a class '" + clazz.getName() + "'");
             }
-            
+
             return object;
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(String.format("Initialization of '%s' failed", clazz.getName()), e);
+            throw new RuntimeException("Initialization of '" + clazz.getName() + "' failed", e);
         }
     }
 }

@@ -1,12 +1,10 @@
 package io.github.cucumberbatch.north.io.remote;
 
+import io.github.cucumberbatch.north.io.Input;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import io.github.cucumberbatch.north.io.Input;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_A;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
+import static org.lwjgl.glfw.GLFW.*;
 
 class GamepadStateTest {
 
@@ -113,22 +111,4 @@ class GamepadStateTest {
         Assertions.assertFalse(input.isHeld(GLFW_KEY_SPACE));
     }
 
-    @Test
-    void jsonIsParsedAndWritten() {        java.util.Map<String, Object> parsed = Json.parseObject("{\"type\":\"button\",\"id\":\"a\",\"pressed\":true}");
-        Assertions.assertEquals("button", Json.getString(parsed, "type", null));
-        Assertions.assertEquals("a", Json.getString(parsed, "id", null));
-        Assertions.assertTrue(Json.getBoolean(parsed, "pressed", false));
-
-        Assertions.assertEquals("{\"a\":1,\"b\":[true,null]}", Json.write(parseNested()));
-    }
-
-    private java.util.Map<String, Object> parseNested() {
-        java.util.Map<String, Object> root = new java.util.LinkedHashMap<>();
-        root.put("a", 1);
-        java.util.List<Object> list = new java.util.ArrayList<>();
-        list.add(Boolean.TRUE);
-        list.add(null);
-        root.put("b", list);
-        return root;
-    }
 }

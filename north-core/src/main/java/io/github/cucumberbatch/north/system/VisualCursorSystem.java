@@ -10,10 +10,11 @@ import io.github.cucumberbatch.north.architecture.ApplicationContext;
 import io.github.cucumberbatch.north.architecture.ComponentHandler;
 import io.github.cucumberbatch.north.architecture.Inject;
 import io.github.cucumberbatch.north.exception.ComponentNotFoundException;
+import io.github.cucumberbatch.north.graphics.CursorMode;
+import io.github.cucumberbatch.north.graphics.Display;
 import io.github.cucumberbatch.north.graphics.Graphics;
 import io.github.cucumberbatch.north.graphics.Material;
 import io.github.cucumberbatch.north.graphics.PredefinedMeshes;
-import io.github.cucumberbatch.north.graphics.Window;
 import io.github.cucumberbatch.north.graphics.shader.Shader;
 import io.github.cucumberbatch.north.physics.shape.Rectangle;
 import io.github.cucumberbatch.north.physics.spatial.Aabb;
@@ -47,7 +48,7 @@ public class VisualCursorSystem extends AbstractSystem<VisualCursor>
     private static final float  MAX_PICK_DISTANCE = 1000f;
 
     private final Input input;
-    private final Window window;
+    private final Display display;
     private final Graphics graphics;
     private final SceneSpatialIndex spatialIndex;
 
@@ -73,7 +74,7 @@ public class VisualCursorSystem extends AbstractSystem<VisualCursor>
     public VisualCursorSystem(ApplicationContext context) {
         super(VisualCursor.class, context);
         this.input        = context.getDependency(Input.class);
-        this.window       = context.getDependency(Window.class);
+        this.display      = context.getDependency(Display.class);
         this.graphics     = context.getDependency(Graphics.class);
         this.spatialIndex = context.getDependency(SceneSpatialIndex.class);
     }
@@ -107,11 +108,7 @@ public class VisualCursorSystem extends AbstractSystem<VisualCursor>
         syncTransform(cursor);
 
         if (cursor.hideSystemCursor) {
-            GLFW.glfwSetInputMode(
-                    window.handle(),
-                    GLFW.GLFW_CURSOR,
-                    GLFW.GLFW_CURSOR_HIDDEN
-            );
+            display.setCursorMode(CursorMode.HIDDEN);
         }
     }
 
@@ -258,8 +255,8 @@ public class VisualCursorSystem extends AbstractSystem<VisualCursor>
     }
 
     private boolean updateCameraRay(Vector2f pointer) {
-        int width  = window.width();
-        int height = window.height();
+        int width  = display.width();
+        int height = display.height();
         if (width <= 0 || height <= 0) return false;
 
         viewProjection.set(graphics.projection()).mul(graphics.view());
@@ -291,8 +288,8 @@ public class VisualCursorSystem extends AbstractSystem<VisualCursor>
     }
 
     private boolean projectBounds(Aabb bounds) {
-        int width  = window.width();
-        int height = window.height();
+        int width  = display.width();
+        int height = display.height();
         if (width <= 0 || height <= 0 || bounds == null || bounds.isEmpty()) return false;
 
         viewProjection.set(graphics.projection()).mul(graphics.view());
@@ -430,10 +427,8 @@ public class VisualCursorSystem extends AbstractSystem<VisualCursor>
     private void hideOperatingSystemCursor(VisualCursor cursor) {
         if (!cursor.hideSystemCursor) return;
 
-        long handle = window.handle();
-        int mode = GLFW.glfwGetInputMode(handle, GLFW.GLFW_CURSOR);
-        if (mode == GLFW.GLFW_CURSOR_NORMAL) {
-            GLFW.glfwSetInputMode(handle, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
+        if (display.getCursorMode() == CursorMode.NORMAL) {
+            display.setCursorMode(CursorMode.HIDDEN);
         }
     }
 }

@@ -1,14 +1,14 @@
 package io.github.cucumberbatch.north.architecture;
 
+import io.github.cucumberbatch.north.graphics.Display;
 import io.github.cucumberbatch.north.graphics.Graphics;
 import org.lwjgl.glfw.GLFW;
 import io.github.cucumberbatch.north.asset.AssetService;
-import io.github.cucumberbatch.north.asset.SimpleAssetService;
 import io.github.cucumberbatch.north.audio.Audio;
 import io.github.cucumberbatch.north.config.ApplicationProperties;
 import io.github.cucumberbatch.north.exception.ComponentNotFoundException;
-import io.github.cucumberbatch.north.exception.ShaderUniformNotFoundException;
-import io.github.cucumberbatch.north.graphics.Window;
+import io.github.cucumberbatch.north.graphics.shader.ShaderUniformNotFoundException;
+import io.github.cucumberbatch.north.system.AlwaysUpdates;
 import io.github.cucumberbatch.north.system.SystemManager;
 import io.github.cucumberbatch.north.physics.spatial.Aabb;
 import io.github.cucumberbatch.north.physics.collision.Collision;
@@ -24,7 +24,6 @@ import io.github.cucumberbatch.north.scene.component.Transform;
 import io.github.cucumberbatch.north.scene.component.management.ComponentContainer;
 import io.github.cucumberbatch.north.scene.component.management.ComponentManager;
 import io.github.cucumberbatch.north.system.CameraAwareService;
-import io.github.cucumberbatch.north.system.CameraControlsSystem;
 import io.github.cucumberbatch.north.io.Input;
 import io.github.cucumberbatch.north.system.System;
 import io.github.cucumberbatch.north.system.process.*;
@@ -35,15 +34,12 @@ import org.slf4j.LoggerFactory;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.lwjgl.glfw.GLFW.glfwPollEvents;
-import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
-import static org.lwjgl.opengl.GL11.*;
 import static io.github.cucumberbatch.north.architecture.Pipeline.UpdateFlowState.*;
 
 public class Pipeline implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(Pipeline.class);
 
-    private final Window window;
+    private final Display display;
     private final Graphics graphics;
     private final ComponentManager componentManager;
     private final SystemManager systemManager;
@@ -69,7 +65,7 @@ public class Pipeline implements Runnable {
     private final ComponentContainer componentContainer;
 
     public Pipeline(ApplicationContext context) {
-        this.window = context.getDependency(Window.class);
+        this.display = context.getDependency(Display.class);
         this.graphics = context.getDependency(Graphics.class);
         this.componentManager = context.getDependency(ComponentManager.class);
         this.systemManager = context.getDependency(SystemManager.class);
@@ -86,10 +82,7 @@ public class Pipeline implements Runnable {
                 ApplicationProperties.getBoolean("application.editor.process.update.smooth-stop-and-start");
 
 //            context.addDependency(ComponentContainer.class, componentContainer);
-        this.assetService = context.addDependency(
-                AssetService.class,
-                new SimpleAssetService(graphics, context.getDependency(Audio.class))
-        );
+        this.assetService = context.getDependency(AssetService.class);
         this.componentContainer = context.getDependency(ComponentContainer.class);
         cameraAwareService = context.getDependency(CameraAwareService.class);
         this.entityManager = context.addDependency(
@@ -102,10 +95,10 @@ public class Pipeline implements Runnable {
     public void run() {
         // Logger.info("Game loop started");
 
-        composeScene(new DefaultSceneComposer(assetService));
+        composeScene(new DefaultSceneComposer(assetService, graphics));
         //applyDeferredCommands();
 
-        while (window.shouldNotClose() && !stopped) {
+        while (display.shouldNotClose() && !stopped) {
             try {
                 tick();
             } catch (RuntimeException e) {
@@ -135,7 +128,7 @@ public class Pipeline implements Runnable {
 
         applyDeferredCommands();
 
-        render(window);
+        render();
 
         timingContext.sync();
         countedFrames++;
@@ -369,7 +362,7 @@ public class Pipeline implements Runnable {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void update(final float deltaTime) {
 //        Stopwatch.start();
-        glfwPollEvents();
+        display.pollEvents();
 
         float modifiedDeltaTime = deltaTime;
 
@@ -390,8 +383,8 @@ public class Pipeline implements Runnable {
         }
 
         for (UpdateProcess process : systemManager.getProcessList(UpdateProcess.class)) {
-            boolean isCameraControlsSystem = CameraControlsSystem.class.isAssignableFrom(process.getClass());
-            if (updateFlowState.equals(STOPPED) && !isCameraControlsSystem) continue;
+            boolean alwaysUpdates = process instanceof AlwaysUpdates;
+            if (updateFlowState.equals(STOPPED) && !alwaysUpdates) continue;
             io.github.cucumberbatch.north.system.System<? extends Component> system = (io.github.cucumberbatch.north.system.System<? extends Component>) process;
             Iterator<? extends Component> iterator = system.getComponentIterator();
             while (iterator.hasNext()) {
@@ -403,7 +396,7 @@ public class Pipeline implements Runnable {
 //                            component.getEntity().getName())
 //                    );
                     try {
-                        if (isCameraControlsSystem) {
+                        if (alwaysUpdates) {
                             process.update(component, deltaTime);
                         } else {
                             process.update(component, modifiedDeltaTime);
@@ -505,8 +498,8 @@ public class Pipeline implements Runnable {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public void render(Window window) {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    public void render() {
+        graphics.clear();
 
 //        Stopwatch.start();
 
@@ -537,7 +530,7 @@ public class Pipeline implements Runnable {
             }
         }
 
-        glfwSwapBuffers(window.handle());
+        display.swapBuffers();
     }
 
 

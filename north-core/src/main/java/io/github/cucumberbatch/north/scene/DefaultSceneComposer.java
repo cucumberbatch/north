@@ -3,10 +3,10 @@ package io.github.cucumberbatch.north.scene;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.lwjgl.opengl.GL30;
 import io.github.cucumberbatch.north.asset.AssetService;
 import io.github.cucumberbatch.north.audio.AudioClip;
 import io.github.cucumberbatch.north.config.ApplicationProperties;
+import io.github.cucumberbatch.north.graphics.Graphics;
 import io.github.cucumberbatch.north.graphics.Material;
 import io.github.cucumberbatch.north.graphics.Mesh;
 import io.github.cucumberbatch.north.graphics.PredefinedMeshes;
@@ -27,10 +27,12 @@ public class DefaultSceneComposer implements SceneComposer {
     private static final String SHADERS_PATH = "assets/shaders/";
 
     private final AssetService assetService;
+    private final Graphics graphics;
     private final Map<String, BiConsumer<EntityManager, ComponentManager>> scenes;
 
-    public DefaultSceneComposer(AssetService assetService) {
+    public DefaultSceneComposer(AssetService assetService, Graphics graphics) {
         this.assetService = assetService;
+        this.graphics = graphics;
         this.scenes = new HashMap<>();
         initScenesMappings();
     }
@@ -58,7 +60,7 @@ public class DefaultSceneComposer implements SceneComposer {
     }
 
     private void footstepTestScene(EntityManager scene, ComponentManager cm) {
-        GL30.glClearColor(0.06f, 0.07f, 0.09f, 1f);
+        graphics.setClearColor(0.06f, 0.07f, 0.09f, 1f);
 
         Entity camera = createCamera(scene, cm, false);
 
@@ -197,7 +199,7 @@ public class DefaultSceneComposer implements SceneComposer {
     }
 
     private void testManyTransparentCubesGrid(EntityManager scene, ComponentManager cm) {
-        GL30.glClearColor(.1f, .1f, .1f, 1f);
+        graphics.setClearColor(.1f, .1f, .1f, 1f);
 
         createCamera(scene, cm, true);
         

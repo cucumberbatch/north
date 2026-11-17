@@ -1,6 +1,6 @@
 package io.github.cucumberbatch.north.io.remote;
 
-import io.github.cucumberbatch.north.graphics.Window;
+import io.github.cucumberbatch.north.graphics.Display;
 import io.github.cucumberbatch.north.io.Input;
 
 import java.util.LinkedHashMap;
@@ -25,7 +25,7 @@ public class GamepadState {
     private final String clientId;
     private final GamepadLayout layout;
     private final RemoteInputBus bus;
-    private final Window window;
+    private final Display display;
 
     private final Map<String, Boolean> buttons = new ConcurrentHashMap<>();
     private final Map<String, Float> axes = new ConcurrentHashMap<>();
@@ -35,15 +35,15 @@ public class GamepadState {
     private float cursorX;
     private float cursorY;
 
-    public GamepadState(String clientId, GamepadLayout layout, RemoteInputBus bus, Window window) {
+    public GamepadState(String clientId, GamepadLayout layout, RemoteInputBus bus, Display display) {
         this.clientId = clientId;
         this.layout = layout;
         this.bus = bus;
-        this.window = window;
+        this.display = display;
 
-        if (window != null) {
-            this.cursorX = window.width() / 2f;
-            this.cursorY = window.height() / 2f;
+        if (display != null) {
+            this.cursorX = display.width() / 2f;
+            this.cursorY = display.height() / 2f;
         }
     }
 
@@ -122,9 +122,9 @@ public class GamepadState {
     public void moveCursor(float dx, float dy) {
         lastActivity = System.currentTimeMillis();
 
-        if (window != null) {
-            int width = window.width();
-            int height = window.height();
+        if (display != null) {
+            int width = display.width();
+            int height = display.height();
             cursorX = Math.max(0f, Math.min(width - 1f, cursorX + dx));
             cursorY = Math.max(0f, Math.min(height - 1f, cursorY + dy));
         } else {

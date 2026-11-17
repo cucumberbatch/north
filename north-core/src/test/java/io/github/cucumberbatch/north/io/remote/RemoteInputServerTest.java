@@ -5,7 +5,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import io.github.cucumberbatch.north.architecture.ApplicationContext;
-import io.github.cucumberbatch.north.graphics.Window;
+import io.github.cucumberbatch.north.graphics.Display;
+import io.github.cucumberbatch.north.graphics.glfw.Window;
 import io.github.cucumberbatch.north.io.Input;
 
 import java.io.ByteArrayOutputStream;
@@ -41,7 +42,7 @@ class RemoteInputServerTest {
 
         ApplicationContext context = new ApplicationContext();
         Window window = new Window("test", 800, 600, false);
-        context.addDependency(Window.class, window);
+        context.addDependency(Display.class, window);
 
         input = context.getDependency(Input.class);
         server = new RemoteInputServer(context);

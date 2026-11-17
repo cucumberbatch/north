@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <name>North Engine</name>
-    <description>A simple Java OpenGL game engine which using ECS pattern</description>
+    <name>North</name>
+    <description>Simple LWJGL game engine</description>
 
     <groupId>io.github.cucumberbatch.north</groupId>
     <artifactId>north</artifactId>
@@ -15,6 +15,7 @@
     <modules>
         <module>north-common</module>
         <module>north-core</module>
+        <module>north-app-desktop</module>
     </modules>
 
     <properties>
@@ -40,6 +41,22 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>io.github.cucumberbatch.north</groupId>
+                <artifactId>north-common</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.cucumberbatch.north</groupId>
+                <artifactId>north-core</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.cucumberbatch.north</groupId>
+                <artifactId>north-app-desktop</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.lwjgl</groupId>
                 <artifactId>lwjgl-assimp</artifactId>

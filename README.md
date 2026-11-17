@@ -38,8 +38,14 @@ features are added incrementally.
 Maven is the build tool:
 
 ```bash
-mvn -pl north-core -am package
-java -jar north-core/target/north-core-0.0.1.jar
+mvn -pl north-app-desktop -am package
+java -jar north-app-desktop/target/north-app-desktop-0.0.1.jar
+```
+
+Use a different configuration file with `--config`, `-Dnorth.config`, or `NORTH_CONFIG`:
+
+```bash
+java -Dnorth.config=./north-dev.properties -jar north-app-desktop/target/north-app-desktop-0.0.1.jar
 ```
 
 Build every module:
@@ -75,9 +81,13 @@ north-core/src/main/java/io/github/cucumberbatch/north/
 ├── audio/          OpenAL wrapper: Audio, AudioClip, AudioSource
 ├── physics/        collisions, shapes, octree spatial index
 └── io/             Input and the remote web-gamepad server
+
+north-app-desktop/src/main/java/io/github/cucumberbatch/north/architecture/
+└── Application.java   desktop launcher and config selection
 ```
 
-Main class: `io.github.cucumberbatch.north.architecture.Application`.
+Default configuration lives at `north-common/src/main/resources/north.properties`.
+The desktop main class is `io.github.cucumberbatch.north.architecture.Application`.
 
 Assets live in `north-core/src/main/resources/assets/` and are loaded by classpath path.
 
@@ -265,13 +275,14 @@ there and select them with `application.scene`.
 ## Configuration
 
 All engine settings are read from
-[`north-core/src/main/resources/north.properties`](north-core/src/main/resources/north.properties).
-Change a value and rebuild the project. When launching the engine JVM directly, remote-input
-properties can additionally be overridden with a `-Dnorth.<property>=value` system property,
-for example:
+[`north-common/src/main/resources/north.properties`](north-common/src/main/resources/north.properties).
+Change a value and rebuild the project. The desktop launcher can also load a different
+configuration file with `--config`, `-Dnorth.config`, or `NORTH_CONFIG`. When launching the
+engine JVM directly, remote-input properties can additionally be overridden with a
+`-Dnorth.<property>=value` system property, for example:
 
 ```bash
-java -Dnorth.application.remote-input.port=9090 -jar north-core/target/north-core-0.0.1.jar
+java -Dnorth.application.remote-input.port=9090 -jar north-app-desktop/target/north-app-desktop-0.0.1.jar
 ```
 
 | Property | Default | Description |

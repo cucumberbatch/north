@@ -42,8 +42,8 @@ public class GamepadState {
         this.window = window;
 
         if (window != null) {
-            this.cursorX = window.getWidth() / 2f;
-            this.cursorY = window.getHeight() / 2f;
+            this.cursorX = window.width() / 2f;
+            this.cursorY = window.height() / 2f;
         }
     }
 
@@ -123,8 +123,8 @@ public class GamepadState {
         lastActivity = System.currentTimeMillis();
 
         if (window != null) {
-            int width = window.getWidth();
-            int height = window.getHeight();
+            int width = window.width();
+            int height = window.height();
             cursorX = Math.max(0f, Math.min(width - 1f, cursorX + dx));
             cursorY = Math.max(0f, Math.min(height - 1f, cursorY + dy));
         } else {

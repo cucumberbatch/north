@@ -1,23 +1,25 @@
 package io.github.cucumberbatch.north.system;
 
+import java.util.ArrayList;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.github.cucumberbatch.north.architecture.ApplicationContext;
 import io.github.cucumberbatch.north.architecture.ComponentHandlerScanner;
 import io.github.cucumberbatch.north.architecture.Initializer;
+import io.github.cucumberbatch.north.architecture.Inject;
 import io.github.cucumberbatch.north.architecture.SystemComponentPair;
-import io.github.cucumberbatch.north.scene.component.management.ComponentContainer;
-import io.github.cucumberbatch.north.scene.component.management.MapBasedComponentContainer;
+import io.github.cucumberbatch.north.config.ApplicationProperties;
 import io.github.cucumberbatch.north.scene.Entity;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 import io.github.cucumberbatch.north.scene.component.Component;
 import io.github.cucumberbatch.north.scene.component.ComponentState;
-import io.github.cucumberbatch.north.config.ApplicationProperties;
-import io.github.cucumberbatch.north.physics.collision.Collision;
+import io.github.cucumberbatch.north.scene.component.management.ComponentContainer;
 import io.github.cucumberbatch.north.system.process.InitProcess;
 import io.github.cucumberbatch.north.system.process.Process;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class SystemManager {
     private static final Logger log = LoggerFactory.getLogger(SystemManager.class);
@@ -34,18 +36,12 @@ public class SystemManager {
 
     private final ComponentContainer componentContainer;
 
-   
+    @Inject
     public SystemManager(ApplicationContext context) {
-        this.context           = context;
-        this.systemInitializer = context.getDependency(Initializer.class);
-        this.scanner           = new ComponentHandlerScanner();
-
-        try {
-            this.componentContainer = context.addDependency(ComponentContainer.class, new MapBasedComponentContainer());
-        } catch (RuntimeException e) {
-            log.error("Failed to create and register component container instance!");
-            throw new RuntimeException(e);
-        }
+        this.context            = context;
+        this.systemInitializer  = context.getDependency(Initializer.class);
+        this.scanner            = new ComponentHandlerScanner();
+        this.componentContainer = context.getDependency(ComponentContainer.class);
 
         initProcessMap(ApplicationProperties.getProperty("process.package"));
         loadComponentSystemsFromPackage(ApplicationProperties.getProperty("system.package"));

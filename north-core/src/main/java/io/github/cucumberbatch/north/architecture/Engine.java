@@ -3,9 +3,7 @@ package io.github.cucumberbatch.north.architecture;
 import io.github.cucumberbatch.north.audio.Audio;
 import io.github.cucumberbatch.north.graphics.Graphics;
 import io.github.cucumberbatch.north.graphics.OpenGLGraphics;
-import io.github.cucumberbatch.north.scene.component.management.ComponentManager;
 import io.github.cucumberbatch.north.graphics.Window;
-import io.github.cucumberbatch.north.system.SystemManager;
 import io.github.cucumberbatch.north.system.remote.RemoteInputServer;
 
 /**
@@ -17,11 +15,9 @@ public class Engine {
     public final Audio audio;
     public final Pipeline pipeline;
     public final ApplicationContext context;
-    public final SystemManager systemManager;
-    public final ComponentManager componentManager;
     public final RemoteInputServer remoteInputServer;
 
-    public Engine() throws Exception {
+    public Engine() {
         context = new ApplicationContext();
 
         window = new Window();
@@ -32,12 +28,6 @@ public class Engine {
 
         audio = new Audio();
         context.addDependency(Audio.class, audio);
-
-        systemManager = new SystemManager(context);
-        context.addDependency(SystemManager.class, systemManager);
-
-        componentManager = new ComponentManager(context);
-        context.addDependency(ComponentManager.class, componentManager);
 
         pipeline = new Pipeline(context);
         context.addDependency(Pipeline.class, pipeline);

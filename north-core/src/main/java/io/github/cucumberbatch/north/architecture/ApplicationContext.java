@@ -29,7 +29,7 @@ public class ApplicationContext {
 
     public <T> T addDependency(Class<T> aClass, T value) {
         if (objects.containsKey(aClass) && !silentRewrites) {
-            throw new IllegalStateException(String.format("An object of type '%' is already in context", aClass.getName()));
+            throw new IllegalStateException(String.format("An object of type '%s' is already in context", aClass.getName()));
         }
         objects.put(aClass, value);
         return value;

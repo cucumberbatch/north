@@ -22,20 +22,13 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class Window {
     private static final Logger log = LoggerFactory.getLogger(Window.class);
 
-    public final String title;
-    private static int width;
-    private static int height;
-
-    public int getWidth() { return width; }
-    public int getHeight() { return height; }
-
-    public void setSize(int newWidth, int newHeight) {
-        width  = newWidth;
-        height = newHeight;
-    }
-
-    private long window = -1;
+    private final String  title;    
     private final boolean vSync;
+    
+    private long handle;
+    private int  width;
+    private int  height;
+
 
     public Window() {
         this(
@@ -47,15 +40,27 @@ public class Window {
     }
 
     public Window(String title, int width, int height, boolean vSync) {
-        this.width = width;
+        this.width  = width;
         this.height = height;
-        this.title = title;
-        this.vSync = vSync;
+        this.title  = title;
+        this.vSync  = vSync;
+
+        this.handle = -1;
+    }
+
+    public String title()  { return title;  }
+    public long   handle() { return handle; }
+    public int    width()  { return width;  }
+    public int    height() { return height; }
+
+    public void resize(int width, int height) {
+        this.width  = width;
+        this.height = height;
     }
 
     public void init(Graphics graphics) {
         Stopwatch.start();
-        if (window != -1) return;
+        if (handle != -1) return;
 
         GLFW.glfwSetErrorCallback((code, message) -> log.error(String.format("err_code 0x%08X: %s ", code, message)));
 
@@ -71,22 +76,23 @@ public class Window {
         GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE); // the window will stay hidden after creation
         GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE); // the window will be resizable
 
-        window = GLFW.glfwCreateWindow(width, height, title, NULL, NULL);
+        handle = GLFW.glfwCreateWindow(width, height, title, NULL, NULL);
+        log.info("Created GLFW window handle: {}", Long.toHexString(handle));
 
-        if (window == NULL)
+        if (handle == NULL)
             throw new RuntimeException("Failed to create the GLFW window");
 
         // Setting up input callback handlers
-        GLFW.glfwSetKeyCallback(window, new Input.KeyboardInputCallback());
-        GLFW.glfwSetMouseButtonCallback(window, new Input.MouseInputCallback());
-        GLFW.glfwSetCursorPosCallback(window, new Input.CursorPositionCallback());
-        GLFW.glfwSetWindowSizeCallback(window, new OpenGLWindowSizeCallback(graphics));
+        GLFW.glfwSetKeyCallback(handle, new Input.KeyboardInputCallback());
+        GLFW.glfwSetMouseButtonCallback(handle, new Input.MouseInputCallback());
+        GLFW.glfwSetCursorPosCallback(handle, new Input.CursorPositionCallback());
+        GLFW.glfwSetWindowSizeCallback(handle, new OpenGLWindowSizeCallback(graphics));
 
         // Get the thread stack and push a new frame
         try (MemoryStack stack = stackPush()) {
             IntBuffer pWidth = stack.mallocInt(1); // int*
             IntBuffer pHeight = stack.mallocInt(1); // int*
-            GLFW.glfwGetWindowSize(window, pWidth, pHeight);
+            GLFW.glfwGetWindowSize(handle, pWidth, pHeight);
 
             // Get the resolution of the primary monitor
             GLFWVidMode videoMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
@@ -96,18 +102,18 @@ public class Window {
 
             // Center the window
             GLFW.glfwSetWindowPos(
-                    window,
+                    handle,
                     (videoMode.width() - pWidth.get(0)) / 2 * 8 / 5,
                     (videoMode.height() - pHeight.get(0)) / 2
             );
         }
         // the stack frame is popped automatically
         // Make the OpenGL context current
-        GLFW.glfwMakeContextCurrent(window);
+        GLFW.glfwMakeContextCurrent(handle);
         // Enable v-sync
         GLFW.glfwSwapInterval(vSync ? 1 : 0);
 
-        GLFW.glfwShowWindow(window);
+        GLFW.glfwShowWindow(handle);
         GL.createCapabilities();
 
 
@@ -129,10 +135,10 @@ public class Window {
     public void destroy(Graphics graphics) {
         log.info("Window destruction process started");
 
-        if (window == -1) return;
+        if (handle == -1) return;
 
-        Callbacks.glfwFreeCallbacks(window);
-        GLFW.glfwDestroyWindow(window);
+        Callbacks.glfwFreeCallbacks(handle);
+        GLFW.glfwDestroyWindow(handle);
 
         GLFW.glfwTerminate();
         GLFW.glfwSetErrorCallback(null).free();
@@ -140,17 +146,7 @@ public class Window {
         log.info("Window destruction process ended");
     }
 
-    public static Vector2f translatePointToWindow(Vector2f point) {
-        return new Vector2f(
-            -1 + point.x / width  * 2,
-             1 - point.y / height * 2);
-    }
-
-    public long getWindow() {
-        return window;
-    }
-
     public boolean shouldNotClose() {
-        return !GLFW.glfwWindowShouldClose(window);
+        return !GLFW.glfwWindowShouldClose(handle);
     }
 }

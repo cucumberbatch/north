@@ -28,22 +28,6 @@ public interface Graphics {
 
     int createShaderProgram(String vertexSource, String fragmentSource);
 
-    default int compileShader(int type, String shaderCode) {
-        int shaderId = GL20.glCreateShader(type);
-
-        GL20.glShaderSource(shaderId, shaderCode);
-        GL20.glCompileShader(shaderId);
-
-        int compileStatus = GL20.glGetShaderi(shaderId, GL20.GL_COMPILE_STATUS);
-        if (compileStatus == GL_FALSE) {
-            String infoLog = GL20.glGetShaderInfoLog(shaderId);
-            GL20.glDeleteShader(shaderId);
-            throw new IllegalStateException("Failed to compile shader! Reason: " + infoLog);
-        }
-
-        return shaderId;
-    }
-
     void deleteShaderProgram(int programId);
 
     void bindShaderProgram(int shaderId);

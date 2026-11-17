@@ -49,7 +49,7 @@ public class Initializer {
             
             return object;
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(String.format("Initialization of '%' failed", clazz.getName()), e);
+            throw new RuntimeException(String.format("Initialization of '%s' failed", clazz.getName()), e);
         }
     }
 }

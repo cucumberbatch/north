@@ -206,8 +206,8 @@ public class VisualCursorLabelSystem extends AbstractSystem<VisualCursorLabel>
         float halfWidth = labelWidth / 2f;
         float halfHeight = labelHeight / 2f;
 
-        float screenWidth = window.getWidth();
-        float screenHeight = window.getHeight();
+        float screenWidth = window.width();
+        float screenHeight = window.height();
         float margin = label.screenMargin;
 
         float cursorHalfWidth = Math.max(1f, cursor.displaySize.x) / 2f;

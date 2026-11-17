@@ -33,7 +33,7 @@ public class CameraSystem extends AbstractSystem<Camera>
 
     @Override
     public void init(Camera camera) throws RuntimeException {
-        camera.ratio = (float) window.getWidth() / Math.max(1, window.getHeight());
+        camera.ratio = (float) window.width() / Math.max(1, window.height());
         updateProjectionMatrices(camera);
 
         camera.eye.set(0f, -1f, 0f);

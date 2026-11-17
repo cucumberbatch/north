@@ -533,7 +533,7 @@ public class Pipeline implements Runnable {
             }
         }
 
-        glfwSwapBuffers(window.getWindow());
+        glfwSwapBuffers(window.handle());
     }
 
 

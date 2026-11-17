@@ -107,7 +107,7 @@ public class VisualCursorSystem extends AbstractSystem<VisualCursor>
 
         if (cursor.hideSystemCursor) {
             GLFW.glfwSetInputMode(
-                    window.getWindow(),
+                    window.handle(),
                     GLFW.GLFW_CURSOR,
                     GLFW.GLFW_CURSOR_HIDDEN
             );
@@ -257,8 +257,8 @@ public class VisualCursorSystem extends AbstractSystem<VisualCursor>
     }
 
     private boolean updateCameraRay(Vector2f pointer) {
-        int width  = window.getWidth();
-        int height = window.getHeight();
+        int width  = window.width();
+        int height = window.height();
         if (width <= 0 || height <= 0) return false;
 
         viewProjection.set(graphics.projection()).mul(graphics.view());
@@ -290,8 +290,8 @@ public class VisualCursorSystem extends AbstractSystem<VisualCursor>
     }
 
     private boolean projectBounds(Aabb bounds) {
-        int width  = window.getWidth();
-        int height = window.getHeight();
+        int width  = window.width();
+        int height = window.height();
         if (width <= 0 || height <= 0 || bounds == null || bounds.isEmpty()) return false;
 
         viewProjection.set(graphics.projection()).mul(graphics.view());
@@ -429,7 +429,7 @@ public class VisualCursorSystem extends AbstractSystem<VisualCursor>
     private void hideOperatingSystemCursor(VisualCursor cursor) {
         if (!cursor.hideSystemCursor) return;
 
-        long handle = window.getWindow();
+        long handle = window.handle();
         int mode = GLFW.glfwGetInputMode(handle, GLFW.GLFW_CURSOR);
         if (mode == GLFW.GLFW_CURSOR_NORMAL) {
             GLFW.glfwSetInputMode(handle, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);

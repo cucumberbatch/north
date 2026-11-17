@@ -17,7 +17,7 @@ public class ComponentManager {
 
     @Inject
     public ComponentManager(ApplicationContext context) {     
-        this.container      = context.getDependency(ComponentContainer.class);
+        this.container      = context.addDependency(ComponentContainer.class, new MapBasedComponentContainer());
         this.commandApplier = context.getDependency(CommandApplier.class);
     }
 

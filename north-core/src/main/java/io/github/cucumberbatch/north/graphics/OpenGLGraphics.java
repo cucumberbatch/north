@@ -19,7 +19,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 //todo: this class is gonna be an OpenGL implementation of a future OpenGLGraphics interface
 public class OpenGLGraphics extends AbstractGraphics {
-    public Window window;
+    public final Window window;
 
     private final float[] matrixValues = new float[16];
 
@@ -30,21 +30,21 @@ public class OpenGLGraphics extends AbstractGraphics {
 
     @Override
     public void updateScreenProjection() {
-        float width  = Math.max(1, window.getWidth());
-        float height = Math.max(1, window.getHeight());
+        float width  = Math.max(1, window.width());
+        float height = Math.max(1, window.height());
         super.screenProjection.identity().ortho(0f, width, height, 0f, -1f, 1f);
     }
 
     @Override
     public void updateViewport(int x, int y, int width, int height) {
-        window.setSize(width, height);
+        window.resize(width, height);
         updateScreenProjection();
         GL30.glViewport(x, y, width, height);
     }
     
     @Override
     public long getWindow() {
-        return window.getWindow();
+        return window.handle();
     }
 
     @Override
@@ -72,6 +72,22 @@ public class OpenGLGraphics extends AbstractGraphics {
         GL20.glDeleteShader(vertexShaderId);
 
         return shaderProgramId;
+    }
+
+    private int compileShader(int type, String shaderCode) {
+        int shaderId = GL20.glCreateShader(type);
+
+        GL20.glShaderSource(shaderId, shaderCode);
+        GL20.glCompileShader(shaderId);
+
+        int compileStatus = GL20.glGetShaderi(shaderId, GL20.GL_COMPILE_STATUS);
+        if (compileStatus == GL_FALSE) {
+            String infoLog = GL20.glGetShaderInfoLog(shaderId);
+            GL20.glDeleteShader(shaderId);
+            throw new IllegalStateException("Failed to compile shader! Reason: " + infoLog);
+        }
+
+        return shaderId;
     }
 
     @Override

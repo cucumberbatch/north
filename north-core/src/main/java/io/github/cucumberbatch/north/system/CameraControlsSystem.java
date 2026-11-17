@@ -236,8 +236,8 @@ public class CameraControlsSystem extends AbstractSystem<CameraControls>
     private void updateViewportProjection(Window window, Graphics graphics) {
         if (camera == null) return;
 
-        int width  = window.getWidth();
-        int height = window.getHeight();
+        int width  = window.width();
+        int height = window.height();
         if (width <= 0 || height <= 0) return;
 
         float aspect = (float) width / height;
@@ -298,8 +298,8 @@ public class CameraControlsSystem extends AbstractSystem<CameraControls>
         virtualCursorPosition    = new Vector2f(virtualCursorPosition).add(cursorPositionDifference);
         previousCursorPosition   = cursorPosition;
 
-        float verticalAngle   =  virtualCursorPosition.y / (window.getWidth() / 256f) - 180;
-        float horizontalAngle = -virtualCursorPosition.x / (window.getWidth() / 256f) - 180;
+        float verticalAngle   =  virtualCursorPosition.y / (window.width() / 256f) - 180;
+        float horizontalAngle = -virtualCursorPosition.x / (window.width() / 256f) - 180;
 
         verticalAngle = restrictAngle(verticalAngle, -MAX_CAMERA_ANGLE, MAX_CAMERA_ANGLE);
 

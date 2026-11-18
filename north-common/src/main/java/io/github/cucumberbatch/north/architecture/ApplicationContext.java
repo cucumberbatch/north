@@ -27,7 +27,7 @@ public class ApplicationContext {
     public <T> T resolve(Class<T> type) {
         T object = type.cast(objects.get(type));
         if (object == null) {
-            object = register(type);
+            object = save(type, initializer.init(type, this));
         }
         return object;
     }

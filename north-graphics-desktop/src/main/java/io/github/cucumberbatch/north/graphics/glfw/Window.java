@@ -73,11 +73,15 @@ public class Window implements Display {
 
     public void init(Graphics graphics) {
         Stopwatch.start();
-        if (handle != -1) return;
+        if (handle != -1) {
+            Stopwatch.reset();
+            return;
+        }
 
         GLFW.glfwSetErrorCallback((code, message) -> log.error(String.format("err_code 0x%08X: %s ", code, message)));
 
         if (!GLFW.glfwInit()) {
+            Stopwatch.reset();
             throw new IllegalStateException("Unable to initialize GLFW");
         }
 
@@ -92,8 +96,10 @@ public class Window implements Display {
         handle = GLFW.glfwCreateWindow(width, height, title, NULL, NULL);
         log.info("Created GLFW window handle: {}", Long.toHexString(handle));
 
-        if (handle == NULL)
+        if (handle == NULL) {
+            Stopwatch.reset();
             throw new RuntimeException("Failed to create the GLFW window");
+        }
 
         // The platform input callbacks are installed by the composition root, so this backend
         // does not have to know about the input abstraction.
@@ -108,8 +114,10 @@ public class Window implements Display {
             // Get the resolution of the primary monitor
             GLFWVidMode videoMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
 
-            if (videoMode == null)
+            if (videoMode == null) {
+                Stopwatch.reset();
                 throw new RuntimeException("Video mode is not found!");
+            }
 
             // Center the window
             GLFW.glfwSetWindowPos(
